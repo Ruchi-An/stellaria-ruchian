@@ -1,0 +1,22 @@
+/* Schedule section heading styles */
+.labelRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 2.2rem;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  margin: 0 0 24px;
+  text-shadow: 0 0 10px rgba(250, 244, 127, 0.55);
+}
+
+.labelText {
+  opacity: 0.96;
+}
+
+.labelIcon {
+  color: var(--star-yellow, #ffd34d);
+  text-shadow: 0 0 10px rgba(250, 244, 127, 0.6);
+  font-size: 1.15rem;
+}

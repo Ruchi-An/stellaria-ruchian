@@ -1,0 +1,22 @@
+/* Background styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* 背景：固定（スクロールで動かない） */
+  background: linear-gradient(rgba(15, 0, 175, 0.3), rgba(50, 100, 255, 0.3)), url('/青ネオン.png') center/cover no-repeat;
+  background-attachment: fixed;
+  background-color: #0a0e27;
+  min-height: 100vh;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+}
