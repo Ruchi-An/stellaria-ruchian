@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./Schedule.module.css";
+import { supabase } from "../lib/supabaseClient";
 
 type CalendarCell = {
   label: string;
@@ -10,13 +11,32 @@ type CalendarCell = {
 };
 
 type Event = {
-  text: string;
-  time: string;
+  id?: number;
+  title: string;
+  play_date: string;
+  start_time: string | null;
+  end_time: string | null;
+  type: string | null;
+  category: string | null;
+  game_name: string | null;
+  memo: string | null;
+};
+
+type ScheduleData = {
+  id: number;
+  title: string;
+  play_date: string;
+  start_time: string | null;
+  end_time: string | null;
+  type: string | null;
+  category: string | null;
+  game_name: string | null;
+  memo: string | null;
 };
 
 const weekdayLabels = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
-function getTimeCategory(timeStr: string): string {
+function getTimeCategory(timeStr: string | null): string {
   if (!timeStr || timeStr === "未定") return "undefined";
 
   const match = timeStr.match(/(\d{1,2}):(\d{2})/);
@@ -33,14 +53,58 @@ function getTimeCategory(timeStr: string): string {
 export function SchedulePage() {
   const now = new Date();
   const [displayDate, setDisplayDate] = useState({ year: now.getFullYear(), month: now.getMonth() });
+  const [schedules, setSchedules] = useState<ScheduleData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
-  const sampleEvents: Record<string, Event[]> = {
-    [`${now.getFullYear()}-12-24`]: [{ text: "配信予定 A", time: "10:00" }],
-    [`${now.getFullYear()}-12-26`]: [{ text: "コラボ予定 B", time: "21:00" }],
-    [`${now.getFullYear()}-12-30`]: [{ text: "年末まとめ配信", time: "19:30" }],
-  };
+  // データベースからスケジュールを取得
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      try {
+        setLoading(true);
+        const { data, error } = await supabase
+          .from('schedule_datas')
+          .select('id, title, play_date, start_time, end_time, type, category, game_name, memo')
+          .order('play_date', { ascending: true });
+
+        if (error) {
+          console.error('Error fetching schedules:', error);
+        } else {
+          setSchedules(data || []);
+        }
+      } catch (err) {
+        console.error('Error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSchedules();
+  }, []);
+
+  // スケジュールデータを日付ごとにグループ化
+  const eventsByDate: Record<string, Event[]> = {};
+  schedules.forEach((schedule) => {
+    if (schedule.play_date) {
+      if (!eventsByDate[schedule.play_date]) {
+        eventsByDate[schedule.play_date] = [];
+      }
+      eventsByDate[schedule.play_date].push({
+        id: schedule.id,
+        title: schedule.title,
+        play_date: schedule.play_date,
+        start_time: schedule.start_time,
+        end_time: schedule.end_time,
+        type: schedule.type,
+        category: schedule.category,
+        game_name: schedule.game_name,
+        memo: schedule.memo,
+      });
+    }
+  });
 
   const year = displayDate.year;
   const monthIndex = displayDate.month;
@@ -67,7 +131,7 @@ export function SchedulePage() {
       key: dateKey,
       label: String(dateNumber),
       isToday: dateKey === todayKey,
-      events: sampleEvents[dateKey] ?? [],
+      events: eventsByDate[dateKey] ?? [],
       isEmpty: false,
     };
   });
@@ -108,6 +172,17 @@ export function SchedulePage() {
   const currentYear = now.getFullYear();
   const yearOptions = Array.from({ length: 7 }, (_, i) => currentYear - 3 + i);
 
+  // モーダル処理
+  const handleEventClick = (event: Event) => {
+    setSelectedEvent(event);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedEvent(null);
+  };
+
   return (
     <main className={styles.page}>
       <section className={styles.hero}>
@@ -118,7 +193,14 @@ export function SchedulePage() {
         </div>
       </section>
 
-      <section className={styles.calendarSection}>
+      {loading ? (
+        <section className={styles.calendarSection}>
+          <div className={styles.calendarCard}>
+            <p style={{ textAlign: 'center', padding: '2rem' }}>読み込み中...</p>
+          </div>
+        </section>
+      ) : (
+        <section className={styles.calendarSection}>
         <div className={styles.calendarCard}>
           <header className={styles.calendarHeader}>
             <div className={styles.legendContainer}>
@@ -216,10 +298,22 @@ export function SchedulePage() {
                   {cell.events.length > 0 && (
                     <ul className={styles.eventList}>
                       {cell.events.map((event) => {
-                        const timeCategory = getTimeCategory(event.time);
+                        const timeCategory = getTimeCategory(event.start_time);
+                        const timeDisplay = event.start_time || "未定";
                         return (
-                          <li key={event.text} className={`${styles.eventChip} ${styles[`event-${timeCategory}`]}`}>
-                            {event.text} — {event.time}
+                          <li 
+                            key={`${event.id}-${event.title}`} 
+                            className={`${styles.eventChip} ${styles[`event-${timeCategory}`]}`}
+                            onClick={() => handleEventClick(event)}
+                            role="button"
+                            tabIndex={0}
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                handleEventClick(event);
+                              }
+                            }}
+                          >
+                            {event.title} — {timeDisplay}
                           </li>
                         );
                       })}
@@ -231,6 +325,59 @@ export function SchedulePage() {
           </div>
         </div>
       </section>
+      )}
+
+      {/* モーダル */}
+      {isModalOpen && selectedEvent && (
+        <div className={styles.modalOverlay} onClick={handleCloseModal}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <button className={styles.modalCloseButton} onClick={handleCloseModal} aria-label="閉じる">
+              ✕
+            </button>
+            <h2 className={styles.modalTitle}>{selectedEvent.title}</h2>
+            <div className={styles.modalBody}>
+              <div className={styles.modalRow}>
+                <span className={styles.modalLabel}>日付:</span>
+                <span className={styles.modalValue}>{selectedEvent.play_date}</span>
+              </div>
+              <div className={styles.modalRow}>
+                <span className={styles.modalLabel}>開始時刻:</span>
+                <span className={styles.modalValue}>{selectedEvent.start_time || '未定'}</span>
+              </div>
+              {selectedEvent.end_time && (
+                <div className={styles.modalRow}>
+                  <span className={styles.modalLabel}>終了時刻:</span>
+                  <span className={styles.modalValue}>{selectedEvent.end_time}</span>
+                </div>
+              )}
+              {selectedEvent.type && (
+                <div className={styles.modalRow}>
+                  <span className={styles.modalLabel}>タイプ:</span>
+                  <span className={styles.modalValue}>{selectedEvent.type}</span>
+                </div>
+              )}
+              {selectedEvent.category && (
+                <div className={styles.modalRow}>
+                  <span className={styles.modalLabel}>カテゴリ:</span>
+                  <span className={styles.modalValue}>{selectedEvent.category}</span>
+                </div>
+              )}
+              {selectedEvent.game_name && (
+                <div className={styles.modalRow}>
+                  <span className={styles.modalLabel}>ゲーム:</span>
+                  <span className={styles.modalValue}>{selectedEvent.game_name}</span>
+                </div>
+              )}
+              {selectedEvent.memo && (
+                <div className={styles.modalRow}>
+                  <span className={styles.modalLabel}>メモ:</span>
+                  <span className={styles.modalValue}>{selectedEvent.memo}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
