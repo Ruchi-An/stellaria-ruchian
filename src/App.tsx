@@ -1,15 +1,17 @@
 import { Routes, Route } from 'react-router-dom';
 import Header from './components/Header/Header.tsx';
 import Footer from './components/Footer/Footer.tsx';
-import HeroSection from './components/HeroSection.tsx';
+import HeroSection from './components/HeroSection';
 import { ScheduleSection } from './components/ScheduleSection';
 import { ScenarioSection } from './components/ScenarioSection';
 import { TakanashiSection } from './components/TakanashiSection';
 import { ProfileSection } from './components/ProfileSection';
 import { SchedulePage } from './pages/Schedule';
+import { ScheduleAdminPage } from './pages/ScheduleAdmin';
 import { ScenarioPage } from './pages/Scenario';
 import { TakanashiPage } from './pages/Takanashi';
 import { ProfilePage } from './pages/Profile';
+import './styles/sections.css';
 
 export default function App() {
   return (
@@ -18,6 +20,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/schedule" element={<SchedulePage />} />
+        <Route path="/schedule-admin" element={<ScheduleAdminPage />} />
         <Route path="/scenario" element={<ScenarioPage />} />
         <Route path="/takanashi" element={<TakanashiPage />} />
         <Route path="/profile" element={<ProfilePage />} />
@@ -30,14 +33,7 @@ function Home() {
   return (
     <>
       <HeroSection />
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(2, 1fr)',
-        gap: '40px',
-        maxWidth: '1280px',
-        margin: '40px auto',
-        padding: '0 20px'
-      }}>
+      <div className="homeGrid">
         <ScheduleSection />
         <ScenarioSection />
         <TakanashiSection />

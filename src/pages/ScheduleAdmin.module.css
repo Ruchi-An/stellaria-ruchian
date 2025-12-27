@@ -43,10 +43,13 @@
 }
 
 .subtitle {
-  margin: 0;
+  margin: 8px 0 0;
   max-width: 640px;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 180, 100, 0.9);
   line-height: 1.6;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
 }
 
 .calendarSection {
@@ -74,6 +77,40 @@
   justify-content: center;
   gap: 12px;
   margin-bottom: 12px;
+  position: relative;
+}
+
+.createButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid rgba(100, 255, 100, 0.6);
+  background: linear-gradient(135deg, rgba(100, 200, 100, 0.6), rgba(80, 180, 80, 0.5));
+  color: #ffffff;
+  font-size: 2rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(100, 200, 100, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.createButton:hover {
+  background: linear-gradient(135deg, rgba(120, 220, 120, 0.7), rgba(100, 200, 100, 0.6));
+  transform: scale(1.1) rotate(90deg);
+  box-shadow: 0 6px 16px rgba(100, 200, 100, 0.5);
+  border-color: rgba(100, 255, 100, 0.8);
+}
+
+.createButton:active {
+  transform: scale(0.95) rotate(90deg);
 }
 
 .dateNavigationContainer {
@@ -262,6 +299,19 @@
   text-align: center;
 }
 
+.dayCell.clickable {
+  cursor: pointer;
+}
+
+.dayCell.clickable:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 200, 100, 0.6);
+  background: rgba(255, 200, 100, 0.1);
+}
+
 @media (max-width: 1100px) {
   .hero {
     min-height: 50vh;
@@ -284,8 +334,6 @@
   .dayCell {
     min-height: 110px;
   }
-
-  /* dateNumber box removed */
 }
 
 @media (max-width: 900px) {
@@ -306,8 +354,6 @@
   .weekRow {
     font-size: 0.78rem;
   }
-
-  /* dateNumber box removed */
 }
 
 @media (max-width: 640px) {
@@ -363,14 +409,6 @@
   .eventList {
     gap: 4px;
   }
-}
-
-.dayCell:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0 8px 20px rgba(0, 0, 0, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.25);
 }
 
 .dateNumber {
@@ -469,7 +507,6 @@
   }
 }
 
-/* スマートフォン: 文字サイズを小さく、時間表示を非表示 */
 @media (max-width: 640px) {
   .eventChip {
     font-size: 0.7rem;
@@ -506,35 +543,31 @@
   transform: scale(0.98);
 }
 
-/* 6:00-11:59 緑 */
+/* 時間帯別イベントカラー */
 .event-morning {
   background: linear-gradient(135deg, rgba(100, 255, 100, 0.25), rgba(100, 255, 100, 0.15));
   border: 2px solid rgb(100, 255, 100);
   box-shadow: 0 0 12px rgba(100, 255, 100, 0.5), 0 4px 14px rgba(0, 0, 0, 0.2);
 }
 
-/* 12:00-17:59 オレンジ */
 .event-afternoon {
   background: linear-gradient(135deg, rgba(255, 165, 0, 0.25), rgba(255, 165, 0, 0.15));
   border: 2px solid rgb(255, 165, 0);
   box-shadow: 0 0 12px rgba(255, 165, 0, 0.5), 0 4px 14px rgba(0, 0, 0, 0.2);
 }
 
-/* 18:00-23:59 青 */
 .event-evening {
   background: linear-gradient(135deg, rgba(100, 180, 255, 0.25), rgba(100, 180, 255, 0.15));
   border: 2px solid rgb(100, 180, 255);
   box-shadow: 0 0 12px rgba(100, 180, 255, 0.5), 0 4px 14px rgba(0, 0, 0, 0.2);
 }
 
-/* 0:00-5:59（深夜） 紫 */
 .event-late-night {
   background: linear-gradient(135deg, rgba(180, 100, 255, 0.25), rgba(180, 100, 255, 0.15));
   border: 2px solid rgb(180, 100, 255);
   box-shadow: 0 0 12px rgba(180, 100, 255, 0.5), 0 4px 14px rgba(0, 0, 0, 0.2);
 }
 
-/* 時間未定 白 */
 .event-undefined {
   background: linear-gradient(135deg, rgba(200, 200, 200, 0.25), rgba(200, 200, 200, 0.15));
   border: 2px solid rgb(200, 200, 200);
@@ -620,12 +653,13 @@
   backdrop-filter: blur(25px) saturate(180%);
   -webkit-backdrop-filter: blur(25px) saturate(180%);
   padding: 36px;
-  max-width: 500px;
+  max-width: 600px;
   width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
   position: relative;
   animation: slideUp 0.3s ease-out;
 }
-
 
 @keyframes slideUp {
   from {
@@ -681,29 +715,130 @@
 .modalBody {
   display: flex;
   flex-direction: column;
+  gap: 20px;
+}
+
+/* フォームスタイル */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
 
-.modalRow {
-  display: flex;
-  flex-direction: row;
-  gap: 12px;
-  align-items: flex-start;
-}
-
-.modalLabel {
+.formLabel {
   font-weight: 600;
   color: rgba(180, 220, 255, 0.9);
-  min-width: 100px;
   font-size: 0.92rem;
+  letter-spacing: 0.03em;
 }
 
-.modalValue {
-  color: rgba(255, 255, 255, 0.95);
+.formInput,
+.formTextarea {
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(180, 220, 255, 0.4);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
   font-size: 0.95rem;
-  line-height: 1.7;
-  flex: 1;
-  font-weight: 500;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.formInput:focus,
+.formTextarea:focus {
+  outline: none;
+  border-color: rgba(180, 220, 255, 0.7);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 12px rgba(180, 220, 255, 0.3);
+}
+
+.formInput::placeholder,
+.formTextarea::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.formTextarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* モーダルアクション */
+.modalActions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.saveButton,
+.cancelButton,
+.deleteButton {
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.saveButton {
+  background: linear-gradient(135deg, rgba(100, 200, 100, 0.6), rgba(80, 180, 80, 0.5));
+  border-color: rgba(100, 255, 100, 0.6);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(100, 200, 100, 0.3);
+}
+
+.saveButton:hover {
+  background: linear-gradient(135deg, rgba(120, 220, 120, 0.7), rgba(100, 200, 100, 0.6));
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(100, 200, 100, 0.4);
+}
+
+.saveButton:active {
+  transform: translateY(0);
+}
+
+.cancelButton {
+  background: rgba(150, 150, 150, 0.3);
+  border-color: rgba(200, 200, 200, 0.4);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.cancelButton:hover {
+  background: rgba(170, 170, 170, 0.4);
+  transform: translateY(-2px);
+}
+
+.cancelButton:active {
+  transform: translateY(0);
+}
+
+.deleteButton {
+  background: linear-gradient(135deg, rgba(255, 80, 80, 0.6), rgba(220, 60, 60, 0.5));
+  border-color: rgba(255, 100, 100, 0.6);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(255, 80, 80, 0.3);
+  margin-right: auto;
+}
+
+.deleteButton:hover {
+  background: linear-gradient(135deg, rgba(255, 100, 100, 0.7), rgba(240, 80, 80, 0.6));
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 80, 80, 0.4);
+}
+
+.deleteButton:active {
+  transform: translateY(0);
 }
 
 @media (max-width: 640px) {
@@ -717,17 +852,24 @@
     margin-bottom: 20px;
   }
 
-  .modalRow {
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+
+  .modalActions {
     flex-direction: column;
-    gap: 4px;
   }
 
-  .modalLabel {
-    min-width: auto;
-    font-size: 0.85rem;
+  .deleteButton {
+    margin-right: 0;
+    order: 3;
   }
 
-  .modalValue {
-    font-size: 0.95rem;
+  .cancelButton {
+    order: 2;
+  }
+
+  .saveButton {
+    order: 1;
   }
 }

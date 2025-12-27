@@ -2,6 +2,35 @@
   --star-yellow: #ffd34d;
 }
 
+.homeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 32px;
+  row-gap: 40px;
+  max-width: 1200px;
+  margin: 28px auto 50px;
+  padding: 0 20px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .homeGrid {
+    gap: 20px;
+    row-gap: 24px;
+    margin: -200px auto 36px; /* さらに上に寄せる */
+    padding: 0 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .homeGrid {
+    gap: 14px;
+    row-gap: 16px;
+    margin: -450px auto 26px; /* ヒーローにかぶせ気味に引き上げる */
+    padding: 0 12px;
+  }
+}
+
 .floatingSection {
   position: relative;
   opacity: 0;

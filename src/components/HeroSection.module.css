@@ -1,72 +1,47 @@
 /* ===== HeroSection Animation ===== */
 .heroSection {
-  height: 100vh; /* 初回表示の高さに固定 */
+  min-height: 100vh; /* 画面いっぱいを基準にしつつ、内容が多いときは伸ばす */
   display: grid;
-  place-items: center;
+  place-items: start center; /* 横中央、縦は上寄せ */
   color: #f7f9ff;
-  overflow: hidden; /* 縦方向にこれ以上大きくしない */
-}
-.sectionWrapper {
+  padding: max(80px, 10vh) 20px 40px; /* 上のマージンを確保しつつレスポンシブに */
+  overflow: hidden;
   position: relative;
-  width: 50vw;
-  height: 55vh;
+  width: min(1280px, 100%);
   margin: 0 auto;
-  padding: 60px 80px;
-  border-radius: 24px; /* 角に丸みをつける */
-  background-image: url('/サムネ-準備中.png');
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-  backdrop-filter: blur(10px);
+}
+
+/* 画像＋オーバーレイ用のラッパー */
+.heroImageWrap {
+  position: relative;
+  --wrapper-width: clamp(1px, 92vw, 1040px);
+  width: var(--wrapper-width);
+  margin: clamp(1px, 3vw, 64px) auto 16px;
+  container-type: inline-size; /* コンテナ幅に応じたcqw計算を有効化 */
+}
+
+.topHeroImage {
+  width: 100%;
+  height: auto; /* アスペクト比維持 */
+  display: block;
+  border-radius: 24px; /* セクションと揃える */
   border: 2px solid rgba(255, 255, 255, 0.9);
-  box-shadow: 
-    0 0 20px rgba(255, 255, 255, 0.8),
-    0 0 40px rgba(255, 255, 255, 0.5),
-    0 0 60px rgba(255, 255, 255, 0.3),
-    inset 0 0 20px rgba(255, 255, 255, 0.1);
-  /* 展開アニメーション（初期表示を素早く） */
-  animation: scalePopIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s forwards;
-  opacity: 0;
-  z-index: 5;
+  box-shadow:
+    0 0 20px rgba(255, 255, 255, 0.6),
+    0 0 40px rgba(255, 255, 255, 0.35);
+}
+
+/* 画像上に重ねるコンテンツ */
+.overlay {
+  position: absolute;
+  left: clamp(1px, 5.0cqw, 60px);
+  top: 50%;
+  transform: translateY(-60%);
+  z-index: 10;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  overflow: hidden; /* 角の丸みで画像がはみ出ないように */
-  transform: scale(0.85);
-}
-
-@keyframes scalePopIn {
-  0% {
-    opacity: 0;
-    transform: scale(0.7);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes titleGlide {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes subtitleGlide {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 0.7;
-    transform: translateY(0);
-  }
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: min(90%, 520px);
 }
 
 @keyframes scheduleSlideIn {
@@ -80,73 +55,16 @@
   }
 }
 
-.title {
-  font-size: 3rem;
-  letter-spacing: 0.1em;
-  color: var(--star-yellow);
-  text-shadow: 0 0 12px rgba(250,244,127,0.6);
-  margin-bottom: 0.5rem;
-  animation: titleGlide 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.25s forwards;
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-.subtitle {
-  font-size: 1.2rem;
-  opacity: 0.7;
-  letter-spacing: 0.05em;
-  color: #f7f9ff;
-  animation: subtitleGlide 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.35s forwards;
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-.content {
-  flex: 1 1 50%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  text-align: left;
-  align-self: flex-start; /* 左エリア上側に固定 */
-  padding-left: 12px; /* 見出しとカードを少し右へ寄せる */
-}
-
-.imageWrapper {
-  flex: 0 1 45%;
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-end;
-}
-
-.imageCrop {
-  width: 100%;
-  max-width: 460px; /* 画像の最大表示幅 */
-  height: 80vh; /* 上半身中心に見せるため、縦を大きめに確保 */
-  max-height: 80vh;
-  overflow: hidden; /* 上下をクロップ */
-  border-radius: 12px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0));
-}
-
-.image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* 上半身中心にフィット */
-  object-position: top center; /* 上側を優先して表示 */
-  filter: drop-shadow(0 20px 30px rgba(0,0,0,0.35))
-          drop-shadow(0 0 18px rgba(250,244,127,0.25));
-}
-
 /* 予定カード */
 .scheduleLabel {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 2.7rem;
+  font-size: clamp(0.1rem, 5.0cqw, 5rem);
   letter-spacing: 0.05em;
   font-weight: 700;
-  margin-bottom: 50px;
-  margin-top: 70px;
+  margin-bottom: 28px;
+  margin-top: 0;
   text-shadow: 0 0 10px rgba(250,244,127,0.5);
 }
 
@@ -155,17 +73,17 @@
 }
 
 .scheduleCard {
-  margin-top: 10px;
+  margin-top: 0;
   padding: 16px 16px 10px;
   border-radius: 14px;
   background: linear-gradient(180deg, rgba(100, 130, 255, 0.18), rgba(100, 130, 255, 0.05));
   border: 1px solid rgba(250, 244, 127, 0.25);
   box-shadow: 0 6px 20px rgba(0,0,0,0.25), inset 0 0 24px rgba(255,255,255,0.04);
-  animation: scheduleSlideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.45s forwards;
-  opacity: 0;
-  transform: translateY(20px);
-  max-width: 400px; /* 幅をややコンパクトにして重なり回避 */
+  opacity: 1;
+  transform: none;
+  width: clamp(210px, calc(var(--wrapper-width) * 0.4), 420px);
   margin-right: auto;
+  margin-left: clamp(12px, 3.5cqw, 60px); /* 少し右へ寄せる */
 }
 
 .scheduleIcon {
@@ -193,35 +111,28 @@
   border: 1px solid rgba(255,255,255,0.08);
 }
 
-.badgeToday, .badgeTomorrow {
-  display: inline-block;
-  padding: 6px 10px;
-  font-size: 0.85rem;
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.25);
-  background: rgba(255,255,255,0.12);
-}
-
-.badgeToday {
-  color: #0d1117;
-  background: linear-gradient(180deg, #fff1a6, #fee37a);
-  border-color: rgba(255, 213, 79, 0.7);
-}
-
-.badgeTomorrow {
-  color: #e8f0ff;
-  background: linear-gradient(180deg, rgba(130,160,255,0.9), rgba(100,130,255,0.85));
-  border-color: rgba(150, 170, 255, 0.6);
-}
-
 .itemBody {
   display: grid;
-  gap: 2px;
+  gap: 4px;
+}
+
+.itemTime {
+  font-size: clamp(0.6rem, 2.0cqw, 1.1rem);
+  opacity: 0.85;
+  letter-spacing: 0.02em;
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  justify-self: start; /* Gridの横伸びを防ぎ左寄せ */
+  width: fit-content; /* 文字幅にフィット */
+  white-space: nowrap; /* 改行で横に伸びないように */
 }
 
 .itemTitle {
   font-weight: 800;
-  font-size: 1.05rem;
+  font-size: clamp(0.8rem, 2.8cqw, 1.6rem);
   letter-spacing: 0.02em;
 }
 
@@ -230,35 +141,41 @@
   opacity: 0.85;
 }
 
-@media (max-width: 900px) {
-  .sectionWrapper {
-    padding: 40px 32px;
-  }
-  .title {
-    font-size: 2.4rem;
+.emptyState {
+  font-size: 0.95rem;
+  opacity: 0.8;
+}
+
+/* 時間カテゴリ別ボーダー（カレンダーの色分けに準拠） */
+.time-morning {
+  border-color: rgb(100, 255, 100);
+  box-shadow: 0 0 8px rgba(100, 255, 100, 0.5);
+}
+
+.time-afternoon {
+  border-color: rgb(255, 165, 0);
+  box-shadow: 0 0 8px rgba(255, 165, 0, 0.5);
+}
+
+.time-evening {
+  border-color: rgb(100, 180, 255);
+  box-shadow: 0 0 8px rgba(100, 180, 255, 0.5);
+}
+
+.time-late-night {
+  border-color: rgb(180, 100, 255);
+  box-shadow: 0 0 8px rgba(180, 100, 255, 0.5);
+}
+
+.time-undefined {
+  border-color: rgb(200, 200, 200);
+  box-shadow: 0 0 6px rgba(200, 200, 200, 0.35);
+}
+
+/* スマホ表示ではコメントを非表示 */
+@media (max-width: 768px) {
+  .itemNote {
+    display: none;
   }
 }
 
-@media (max-width: 768px) {
-  .sectionWrapper {
-    flex-direction: column-reverse;
-    text-align: center;
-  }
-  .content {
-    align-items: flex-start;
-    text-align: left;
-  }
-  .scheduleCard {
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 360px;
-  }
-  .imageWrapper {
-    justify-content: center;
-    width: 100%;
-  }
-  .imageCrop {
-    height: 50vh;
-    max-width: 360px;
-  }
-}

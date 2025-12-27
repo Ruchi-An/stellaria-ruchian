@@ -11,6 +11,8 @@ body {
   background: linear-gradient(rgba(15, 0, 175, 0.3), rgba(50, 100, 255, 0.3)), url('/青ネオン.png') center/cover no-repeat;
   background-attachment: fixed;
   background-color: #0a0e27;
+  background-position: center center;
+  background-size: cover;
   min-height: 100vh;
 }
 
