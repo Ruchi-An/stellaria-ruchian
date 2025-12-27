@@ -70,7 +70,7 @@ export function ScheduleAdminPage() {
   const [loading, setLoading] = useState(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
-  const [selectedDate, setSelectedDate] = useState<string>("");
+  const [_selectedDate, setSelectedDate] = useState<string>("");
   const [gameNames, setGameNames] = useState<string[]>([]);
   const holidays = new Holidays('JP');
   
