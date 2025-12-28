@@ -28,12 +28,12 @@
 .titleIcon {
   color: var(--star-yellow, #ffd34d);
   text-shadow: 0 0 10px rgba(250, 244, 127, 0.6);
-  font-size: 1.8rem;
+  font-size: clamp(1.4rem, 4vw, 1.8rem);
 }
 
 .title {
   margin: 0;
-  font-size: 4.0rem;
+  font-size: clamp(1.5rem, 5vw, 4.0rem);
   opacity: 0.95;
   letter-spacing: 0.12em;
   text-shadow:
@@ -46,13 +46,5 @@
   .hero {
     padding-top: 100px;
     padding-bottom: 30px;
-  }
-
-  .title {
-    font-size: 1.5rem;
-  }
-
-  .titleIcon {
-    font-size: 1.4rem;
   }
 }

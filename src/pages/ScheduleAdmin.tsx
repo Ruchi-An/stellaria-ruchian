@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Holidays from "date-holidays";
+import sharedStyles from "./Schedule.shared.module.css";
 import styles from "./ScheduleAdmin.module.css";
 import { supabase } from "../lib/supabaseClient";
 
@@ -72,6 +73,7 @@ export function ScheduleAdminPage() {
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [_selectedDate, setSelectedDate] = useState<string>("");
   const [gameNames, setGameNames] = useState<string[]>([]);
+  const [isUndefinedSchedulesOpen, setIsUndefinedSchedulesOpen] = useState(true);
   const holidays = new Holidays('JP');
   
   const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
@@ -120,6 +122,7 @@ export function ScheduleAdminPage() {
 
   // スケジュールデータを日付ごとにグループ化
   const eventsByDate: Record<string, Event[]> = {};
+  const undefinedSchedules: Event[] = [];
   schedules.forEach((schedule) => {
     if (schedule.play_date) {
       if (!eventsByDate[schedule.play_date]) {
@@ -129,6 +132,19 @@ export function ScheduleAdminPage() {
         id: schedule.id,
         title: schedule.title,
         play_date: schedule.play_date,
+        start_time: schedule.start_time,
+        end_time: schedule.end_time,
+        type: schedule.type,
+        category: schedule.category,
+        game_name: schedule.game_name,
+        memo: schedule.memo,
+      });
+    } else {
+      // play_dateがnull/空の場合は日にち未定として追加
+      undefinedSchedules.push({
+        id: schedule.id,
+        title: schedule.title,
+        play_date: schedule.play_date || '',
         start_time: schedule.start_time,
         end_time: schedule.end_time,
         type: schedule.type,
@@ -356,26 +372,26 @@ export function ScheduleAdminPage() {
   };
 
   return (
-    <main className={styles.page}>
-      <section className={styles.hero}>
-        <div className={styles.titleRow}>
-          <span className={styles.titleIcon}>✦</span>
-          <h1 className={styles.title}>SCHEDULE ADMIN</h1>
-          <span className={styles.titleIcon}>✦</span>
+    <main className={sharedStyles.page}>
+      <section className={sharedStyles.hero}>
+        <div className={sharedStyles.titleRow}>
+          <span className={sharedStyles.titleIcon}>✦</span>
+          <h1 className={sharedStyles.title}>SCHEDULE ADMIN</h1>
+          <span className={sharedStyles.titleIcon}>✦</span>
         </div>
         <p className={styles.subtitle}>管理者専用 - スケジュール編集ページ</p>
       </section>
 
       {loading ? (
-        <section className={styles.calendarSection}>
-          <div className={styles.calendarCard}>
+        <section className={sharedStyles.calendarSection}>
+          <div className={sharedStyles.calendarCard}>
             <p style={{ textAlign: 'center', padding: '2rem' }}>読み込み中...</p>
           </div>
         </section>
       ) : (
-        <section className={styles.calendarSection}>
-        <div className={styles.calendarCard}>
-          <header className={styles.calendarHeader}>
+        <section className={sharedStyles.calendarSection}>
+        <div className={sharedStyles.calendarCard}>
+          <header className={sharedStyles.calendarHeader}>
             <button 
               className={styles.createButton}
               onClick={handleCreateNew}
@@ -384,41 +400,41 @@ export function ScheduleAdminPage() {
             >
               ＋
             </button>
-            <div className={styles.legendContainer}>
-              <div className={styles.legend}>
-                <div className={styles.legendItem}>
-                  <span className={`${styles.legendDot} ${styles.legendMorning}`} />
-                  <span className={styles.legendText}>朝</span>
+            <div className={sharedStyles.legendContainer}>
+              <div className={sharedStyles.legend}>
+                <div className={sharedStyles.legendItem}>
+                  <span className={`${sharedStyles.legendDot} ${sharedStyles.legendMorning}`} />
+                  <span className={sharedStyles.legendText}>朝</span>
                 </div>
               </div>
-              <div className={styles.legend}>
-                <div className={styles.legendItem}>
-                  <span className={`${styles.legendDot} ${styles.legendAfternoon}`} />
-                  <span className={styles.legendText}>昼</span>
+              <div className={sharedStyles.legend}>
+                <div className={sharedStyles.legendItem}>
+                  <span className={`${sharedStyles.legendDot} ${sharedStyles.legendAfternoon}`} />
+                  <span className={sharedStyles.legendText}>昼</span>
                 </div>
               </div>
-              <div className={styles.legend}>
-                <div className={styles.legendItem}>
-                  <span className={`${styles.legendDot} ${styles.legendEvening}`} />
-                  <span className={styles.legendText}>夜</span>
+              <div className={sharedStyles.legend}>
+                <div className={sharedStyles.legendItem}>
+                  <span className={`${sharedStyles.legendDot} ${sharedStyles.legendEvening}`} />
+                  <span className={sharedStyles.legendText}>夜</span>
                 </div>
               </div>
-              <div className={styles.legend}>
-                <div className={styles.legendItem}>
-                  <span className={`${styles.legendDot} ${styles.legendLateNight}`} />
-                  <span className={styles.legendText}>深夜</span>
+              <div className={sharedStyles.legend}>
+                <div className={sharedStyles.legendItem}>
+                  <span className={`${sharedStyles.legendDot} ${sharedStyles.legendLateNight}`} />
+                  <span className={sharedStyles.legendText}>深夜</span>
                 </div>
               </div>
-              <div className={styles.legend}>
-                <div className={styles.legendItem}>
-                  <span className={`${styles.legendDot} ${styles.legendUndefined}`} />
-                  <span className={styles.legendText}>時間未定</span>
+              <div className={sharedStyles.legend}>
+                <div className={sharedStyles.legendItem}>
+                  <span className={`${sharedStyles.legendDot} ${sharedStyles.legendUndefined}`} />
+                  <span className={sharedStyles.legendText}>時間未定</span>
                 </div>
               </div>
             </div>
-            <div className={styles.dateNavigationContainer}>
+            <div className={sharedStyles.dateNavigationContainer}>
               <button 
-                className={styles.navButton} 
+                className={sharedStyles.navButton} 
                 onClick={handlePrevMonth}
                 aria-label="前月"
               >
@@ -427,7 +443,7 @@ export function ScheduleAdminPage() {
               <select
                 value={year}
                 onChange={handleYearChange}
-                className={styles.dateSelector}
+                className={sharedStyles.dateSelector}
                 aria-label="年を選択"
               >
                 {yearOptions.map((y) => (
@@ -439,7 +455,7 @@ export function ScheduleAdminPage() {
               <select
                 value={monthIndex}
                 onChange={handleMonthChange}
-                className={styles.dateSelector}
+                className={sharedStyles.dateSelector}
                 aria-label="月を選択"
               >
                 {Array.from({ length: 12 }, (_, i) => (
@@ -449,7 +465,7 @@ export function ScheduleAdminPage() {
                 ))}
               </select>
               <button 
-                className={styles.navButton} 
+                className={sharedStyles.navButton} 
                 onClick={handleNextMonth}
                 aria-label="次月"
               >
@@ -458,20 +474,20 @@ export function ScheduleAdminPage() {
             </div>
           </header>
 
-          <div className={styles.weekRow}>
+          <div className={sharedStyles.weekRow}>
             {weekdayLabels.map((day) => (
-              <span key={day} className={styles.weekLabel}>
+              <span key={day} className={sharedStyles.weekLabel}>
                 {day}
               </span>
             ))}
           </div>
 
-          <div className={styles.calendarGrid}>
+          <div className={sharedStyles.calendarGrid}>
             {calendarCells.map((cell) => {
-              const classNames = [styles.dayCell];
-              if (cell.isToday) classNames.push(styles.today);
-              if (cell.events.length > 0) classNames.push(styles.hasEvent);
-              if (cell.isEmpty) classNames.push(styles.empty);
+              const classNames = [sharedStyles.dayCell];
+              if (cell.isToday) classNames.push(sharedStyles.today);
+              if (cell.events.length > 0) classNames.push(sharedStyles.hasEvent);
+              if (cell.isEmpty) classNames.push(sharedStyles.empty);
               if (!cell.isEmpty) classNames.push(styles.clickable);
 
               return (
@@ -481,18 +497,18 @@ export function ScheduleAdminPage() {
                   onClick={() => !cell.isEmpty && handleCellClick(cell.key)}
                 >
                   {(() => {
-                    const dateClasses = [styles.dateNumber];
+                    const dateClasses = [sharedStyles.dateNumber];
                     if (cell.isHoliday) {
-                      dateClasses.push(styles.holidayDate);
+                      dateClasses.push(sharedStyles.holidayDate);
                     } else if (cell.weekday === 0) {
-                      dateClasses.push(styles.sundayDate);
+                      dateClasses.push(sharedStyles.sundayDate);
                     } else if (cell.weekday === 6) {
-                      dateClasses.push(styles.saturdayDate);
+                      dateClasses.push(sharedStyles.saturdayDate);
                     }
                     return <span className={dateClasses.join(' ')}>{cell.label}</span>;
                   })()}
                   {cell.events.length > 0 && (
-                    <ul className={styles.eventList}>
+                    <ul className={sharedStyles.eventList}>
                       {cell.events.map((event) => {
                         const timeCategory = getTimeCategory(event.start_time);
                         const startLabel = event.start_time || "未定";
@@ -501,7 +517,7 @@ export function ScheduleAdminPage() {
                         return (
                           <li 
                             key={`${event.id}-${event.title}`} 
-                            className={`${styles.eventChip} ${styles[`event-${timeCategory}`]}`}
+                            className={`${sharedStyles.eventChip} ${sharedStyles[`event-${timeCategory}`]}`}
                             onClick={(e) => handleEventClick(event, e)}
                             role="button"
                             tabIndex={0}
@@ -511,24 +527,24 @@ export function ScheduleAdminPage() {
                               }
                             }}
                           >
-                            <div className={styles.eventText}>
-                              <span className={styles.eventTitleRow}>
+                            <div className={sharedStyles.eventText}>
+                              <span className={sharedStyles.eventTitleRow}>
                                 <span
-                                  className={styles.eventCategory}
+                                  className={sharedStyles.eventCategory}
                                   title={categoryDisplay}
                                 >
                                   {categoryDisplay}
                                 </span>
                                 {event.title && (
                                   <span
-                                    className={styles.eventTitle}
+                                    className={sharedStyles.eventTitle}
                                     title={event.title}
                                   >
                                     {event.title}
                                   </span>
                                 )}
                               </span>
-                              <span className={styles.eventTime}>（{timeDisplay}）</span>
+                              <span className={sharedStyles.eventTime}>（{timeDisplay}）</span>
                             </div>
                           </li>
                         );
@@ -542,6 +558,73 @@ export function ScheduleAdminPage() {
         </div>
       </section>
       )}
+
+      {/* 日にち未定の予定セクション */}
+      <section className={sharedStyles.calendarSection} style={{ marginTop: '32px' }}>
+        <div className={sharedStyles.undefinedSection}>
+          <button
+            className={sharedStyles.undefinedToggleButton}
+            onClick={() => setIsUndefinedSchedulesOpen(!isUndefinedSchedulesOpen)}
+            aria-expanded={isUndefinedSchedulesOpen}
+          >
+            <span className={sharedStyles.toggleIcon}>
+              {isUndefinedSchedulesOpen ? '▼' : '▶'}
+            </span>
+            <span className={sharedStyles.undefinedTitle}>日にち未定の予定</span>
+            <span className={sharedStyles.undefinedCount}>({undefinedSchedules.length}件)</span>
+          </button>
+
+          {isUndefinedSchedulesOpen && (
+            <div className={sharedStyles.undefinedList}>
+              {undefinedSchedules.length > 0 ? (
+                <ul className={sharedStyles.undefinedItems}>
+                  {undefinedSchedules.map((event) => {
+                    const timeCategory = getTimeCategory(event.start_time);
+                    const startLabel = event.start_time || '時間未定';
+                    const timeDisplay = event.end_time ? `${startLabel}-${event.end_time}` : startLabel;
+                    const categoryDisplay = event.category || '未分類';
+                    return (
+                      <li 
+                        key={`${event.id}-${event.title}`}
+                        className={sharedStyles.undefinedItem}
+                      >
+                        <div 
+                          className={`${sharedStyles.undefinedEventChip} ${sharedStyles[`event-${timeCategory}`]}`}
+                          onClick={(e) => handleEventClick(event, e)}
+                          role="button"
+                          tabIndex={0}
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              handleEventClick(event, e as unknown as React.MouseEvent);
+                            }
+                          }}
+                        >
+                          <div className={sharedStyles.undefinedEventText}>
+                            <span className={sharedStyles.undefinedEventCategory}>
+                              {categoryDisplay}
+                            </span>
+                            {event.title && (
+                              <span
+                                className={sharedStyles.undefinedEventTitle}
+                                title={event.title}
+                              >
+                                {event.title}
+                              </span>
+                            )}
+                            <span className={sharedStyles.undefinedEventTime}>（{timeDisplay}）</span>
+                          </div>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : (
+                <p className={sharedStyles.emptyMessage}>日にち未定の予定はありません</p>
+              )}
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* 編集モーダル */}
       {isEditModalOpen && (
@@ -568,14 +651,13 @@ export function ScheduleAdminPage() {
               </div>
 
               <div className={styles.formGroup}>
-                <label className={styles.formLabel}>日付 *</label>
+                <label className={styles.formLabel}>日付</label>
                 <input
                   type="date"
                   name="play_date"
                   value={formData.play_date}
                   onChange={handleFormChange}
                   className={styles.formInput}
-                  required
                 />
               </div>
 
