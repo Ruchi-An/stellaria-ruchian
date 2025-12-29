@@ -9,6 +9,7 @@ import { ProfileSection } from './components/ProfileSection';
 import { SchedulePage } from './pages/Schedule';
 import { ScheduleAdminPage } from './pages/ScheduleAdmin';
 import { ScenarioPage } from './pages/Scenario';
+import { ScenarioAdminPage } from './pages/ScenarioAdmin';
 import { TakanashiPage } from './pages/Takanashi';
 import { ProfilePage } from './pages/Profile';
 import './styles/sections.css';
@@ -22,6 +23,7 @@ export default function App() {
         <Route path="/schedule" element={<SchedulePage />} />
         <Route path="/schedule-admin" element={<ScheduleAdminPage />} />
         <Route path="/scenario" element={<ScenarioPage />} />
+        <Route path="/scenario-admin" element={<ScenarioAdminPage />} />
         <Route path="/takanashi" element={<TakanashiPage />} />
         <Route path="/profile" element={<ProfilePage />} />
       </Routes>

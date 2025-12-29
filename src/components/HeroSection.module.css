@@ -132,7 +132,7 @@
 
 .itemTitle {
   font-weight: 800;
-  font-size: clamp(0.8rem, 2.8cqw, 1.6rem);
+  font-size: clamp(0.8rem, 2.8cqw, 1.3rem);
   letter-spacing: 0.02em;
 }
 
