@@ -17,7 +17,7 @@ export function ScenarioSection() {
           <span className={styles.labelIcon}>✦</span>
         </div>
         <p style={{ opacity: 0.85, marginTop: 8 }}>
-          台本・世界観の公開やアーカイブへの導線を置きます。
+          シナリオ通過報告リスト、GM可能シナリオリストを掲載します。
         </p>
         <div style={{ marginTop: 20, textAlign: 'center' }}>
           <Link to="/scenario" className="detailButton">

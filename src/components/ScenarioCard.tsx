@@ -32,30 +32,30 @@ export function ScenarioCard({ card }: ScenarioCardProps) {
         <div className={styles.contentColumns}>
           <div className={styles.leftColumn}>
             <div className={styles.infoItem}>
-              <span className={styles.label}>制作:</span>
+              <span className={styles.label}>制作：</span>
               <span className={styles.value}>{card.production || '-'}</span>
             </div>
             <div className={styles.infoItem}>
-              <span className={styles.label}>作者様:</span>
+              <span className={styles.label}>作者様：</span>
               <span className={styles.value}>{card.creator || '-'}</span>
             </div>
             <div className={styles.infoItem}>
-              <span className={styles.label}>通過日:</span>
+              <span className={styles.label}>通過日：</span>
               <span className={styles.value}>{card.playDate}</span>
             </div>
           </div>
           
           <div className={styles.rightColumn}>
             <div className={styles.infoItem}>
-              <span className={styles.label}>GM/ST:</span>
-              <span className={styles.value}>{card.gmSt || '-'}</span>
-            </div>
-            <div className={styles.infoItem}>
-              <span className={styles.label}>担当CP:</span>
+              <span className={styles.label}>担当CP：</span>
               <span className={styles.value}>{card.playerCharacter || '-'}</span>
             </div>
+            <div className={styles.infoItem}>
+              <span className={styles.label}>GM/ST：</span>
+              <span className={styles.value}>{card.gmSt || '-'}</span>
+            </div>
             <div className={styles.members}>
-              <span className={styles.label}>メンバー:</span>
+              <span className={styles.label}>メンバー：</span>
               <div className={styles.memberList}>
                 {card.members.map((member, idx) => (
                   <span key={idx} className={styles.memberTag}>

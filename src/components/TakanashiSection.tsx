@@ -17,7 +17,7 @@ export function TakanashiSection() {
           <span className={styles.labelIcon}>✦</span>
         </div>
         <p style={{ opacity: 0.85, marginTop: 8 }}>
-          鷹梨（たかなしか）関連の企画・作品・メモをまとめます。
+          『小鳥が遊ぶ村』―通称『小鳥遊村』関連の紹介、企画などをまとめます。
         </p>
         <div style={{ marginTop: 20, textAlign: 'center' }}>
           <Link to="/takanashi" className="detailButton">

@@ -8,7 +8,10 @@
   letter-spacing: 0.05em;
   font-weight: 700;
   margin: 0 0 20px;
-  text-shadow: 0 0 10px rgba(250, 244, 127, 0.55);
+  text-shadow:
+    0 0 10px rgba(150, 200, 255, 0.55),
+    0 0 20px rgba(100, 180, 255, 0.45),
+    0 0 30px rgba(120, 200, 255, 0.35);
 }
 
 .labelText {

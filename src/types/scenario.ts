@@ -25,3 +25,27 @@ export interface ScenarioCard {
   // 画像URL（pngなど）
   cardImageUrl?: string;
 }
+
+// GM可能シナリオカード型定義
+export interface GMScenarioCard {
+  // ID
+  id: number;
+  // シナリオタイトル
+  title: string;
+  // シナリオカテゴリ
+  category?: string;
+  // 制作
+  production?: string;
+  // 作者様
+  creator?: string;
+  // 推奨人数
+  recommendedPlayers?: string;
+  // プレイ時間
+  playTime?: string;
+  // GM卓回数
+  gmPlayCount?: number;
+  // シナリオリンク
+  scenarioUrl?: string;
+  // メモ/備考
+  notes?: string;
+}

@@ -8,7 +8,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* 背景：固定（スクロールで動かない） */
-  background: linear-gradient(rgba(15, 0, 175, 0.3), rgba(50, 100, 255, 0.3)), url('/青ネオン.png') center/cover no-repeat;
+  background: linear-gradient(rgba(0, 64, 255, 0.3), rgba(50, 100, 255, 0.3)), url('/青ネオン.png') center/cover no-repeat;
   background-attachment: fixed;
   background-color: #0a0e27;
   background-position: center center;

@@ -1,19 +1,25 @@
 import { useState, useEffect } from "react";
-import type { ScenarioCard as ScenarioCardType } from "../types/scenario";
+import type { ScenarioCard as ScenarioCardType, GMScenarioCard } from "../types/scenario";
 import { ScenarioCard } from "../components/ScenarioCard";
 import { supabase } from "../lib/supabaseClient";
 import styles from "./Scenario.module.css";
 
+type TabType = 'passed' | 'gm-ready';
+
 export function ScenarioPage() {
+  const [activeTab, setActiveTab] = useState<TabType>('passed');
   const [cards, setCards] = useState<ScenarioCardType[]>([]);
+  const [gmCards, setGmCards] = useState<GMScenarioCard[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchCards = async () => {
       try {
         setLoading(true);
+        
+        // 通過済みシナリオの取得
         const { data, error } = await supabase
-          .from('tsuka_sinario_list')
+          .from('tsuka_scenario_list')
           .select('*');
 
         if (error) throw error;
@@ -79,6 +85,28 @@ export function ScenarioPage() {
         });
 
         setCards(displayCards);
+
+        // GM可能シナリオの取得
+        const { data: gmData, error: gmError } = await supabase
+          .from('gm_scenario_list')
+          .select('*');
+
+        if (gmError) throw gmError;
+
+        const gmRows = Array.isArray(gmData) ? gmData : [];
+        const gmScenarios: GMScenarioCard[] = gmRows.map((row: any) => ({
+          id: row.id,
+          title: row.title || row.scenario_title || 'Untitled',
+          category: row.category || row.scenario_category || undefined,
+          production: row.production || row.maker || undefined,
+          creator: row.creator || row.author || undefined,
+          recommendedPlayers: row.recommended_players || row.player_count || undefined,
+          playTime: row.play_time || row.duration || undefined,
+          scenarioUrl: row.scenario_url || row.link || undefined,
+          notes: row.notes || row.memo || undefined,
+        }));
+
+        setGmCards(gmScenarios);
       } catch (e) {
         console.error('Failed to load scenario cards:', e);
       } finally {
@@ -100,21 +128,71 @@ export function ScenarioPage() {
       </section>
 
       <div className={styles.container}>
+        {/* タブUI */}
+        <div className={styles.tabs}>
+          <button 
+            className={`${styles.tab} ${activeTab === 'passed' ? styles.active : ''}`}
+            onClick={() => setActiveTab('passed')}
+          >
+            通過済みシナリオ
+          </button>
+          <button 
+            className={`${styles.tab} ${activeTab === 'gm-ready' ? styles.active : ''}`}
+            onClick={() => setActiveTab('gm-ready')}
+          >
+            GM可能シナリオ
+          </button>
+        </div>
 
         {loading ? (
           <div style={{ textAlign: "center", padding: "40px 20px", opacity: 0.6 }}>
             Loading...
           </div>
-        ) : cards.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "40px 20px", opacity: 0.6 }}>
-            No scenario cards available yet.
-          </div>
+        ) : activeTab === 'passed' ? (
+          cards.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "40px 20px", opacity: 0.6 }}>
+              通過済みシナリオはまだありません。
+            </div>
+          ) : (
+            <div className={styles.cardGrid}>
+              {cards.map((card) => (
+                <ScenarioCard key={card.passNumber} card={card} />
+              ))}
+            </div>
+          )
         ) : (
-          <div className={styles.cardGrid}>
-            {cards.map((card) => (
-              <ScenarioCard key={card.passNumber} card={card} />
-            ))}
-          </div>
+          gmCards.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "40px 20px", opacity: 0.6 }}>
+              GM可能シナリオはまだありません。
+            </div>
+          ) : (
+            <div className={styles.cardGrid}>
+              {gmCards.map((card) => (
+                <div key={card.id} style={{ 
+                  padding: "24px",
+                  background: "rgba(255, 255, 255, 0.05)",
+                  borderRadius: "12px",
+                  border: "1px solid rgba(255, 255, 255, 0.1)"
+                }}>
+                  <h3 style={{ margin: "0 0 12px 0", fontSize: "1.3rem" }}>{card.title}</h3>
+                  {card.category && <p style={{ margin: "6px 0", opacity: 0.8 }}>カテゴリ: {card.category}</p>}
+                  {card.production && <p style={{ margin: "6px 0", opacity: 0.8 }}>制作: {card.production}</p>}
+                  {card.creator && <p style={{ margin: "6px 0", opacity: 0.8 }}>作者: {card.creator}</p>}
+                  {card.recommendedPlayers && <p style={{ margin: "6px 0", opacity: 0.8 }}>推奨人数: {card.recommendedPlayers}</p>}
+                  {card.playTime && <p style={{ margin: "6px 0", opacity: 0.8 }}>プレイ時間: {card.playTime}</p>}
+                  {card.scenarioUrl && (
+                    <p style={{ margin: "6px 0" }}>
+                      <a href={card.scenarioUrl} target="_blank" rel="noopener noreferrer" 
+                         style={{ color: "#96c8ff", textDecoration: "none" }}>
+                        シナリオリンク
+                      </a>
+                    </p>
+                  )}
+                  {card.notes && <p style={{ margin: "12px 0 0 0", opacity: 0.7, fontSize: "0.95rem" }}>{card.notes}</p>}
+                </div>
+              ))}
+            </div>
+          )
         )}
       </div>
     </main>

@@ -1,9 +1,60 @@
+/* タブUI（Scenarioページと統一） */
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0;
+}
+.tab {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 12px 24px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+  letter-spacing: 0.05em;
+}
+.tab:hover {
+  color: rgba(255, 255, 255, 0.9);
+}
+.tab.active {
+  color: #ffffff;
+}
+.tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    rgba(255, 211, 77, 0.8),
+    rgba(150, 200, 255, 0.8)
+  );
+  box-shadow: 0 0 10px rgba(255, 211, 77, 0.5);
+}
+
+@media (max-width: 640px) {
+  .tabs {
+    gap: 8px;
+  }
+  .tab {
+    font-size: 0.95rem;
+    padding: 10px 16px;
+  }
+}
 .container {
   max-width: 1200px;
   margin: 0 auto 80px;
   display: grid;
   grid-template-columns: 1fr;
   gap: 24px;
+  min-width: 0;
 }
 
 .subtitle {
@@ -216,27 +267,32 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
+  min-width: 0;
 }
 
 .cardList {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  min-width: 0;
 }
 
 .cardRow {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 12px;
   padding: 12px 14px;
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  min-width: 0;
 }
 
 .cardMeta {
-  flex: 1;
+  flex: 1 1 320px;
   min-width: 0;
+  word-break: break-word;
 }
 
 .cardTitleRow {
@@ -288,6 +344,7 @@
   align-items: flex-start;
   gap: 8px;
   flex-wrap: wrap;
+  min-width: 120px;
 }
 
 .smallLink {
@@ -305,5 +362,8 @@
 @media (min-width: 1024px) {
   .container {
     grid-template-columns: 1.1fr 0.9fr;
+  }
+  .cardRow {
+    flex-wrap: nowrap;
   }
 }
