@@ -1,3 +1,24 @@
+.buttonRow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+@media (max-width: 960px) {
+  .buttonRow {
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+  .buttonRow .detailButton {
+    margin-left: 0 !important;
+    width: 100%;
+    max-width: 260px;
+    text-align: center;
+  }
+}
+
 /* Scenario section description styles */
 .description {
   text-align: center;

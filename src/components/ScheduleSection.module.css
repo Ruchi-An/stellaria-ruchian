@@ -1,3 +1,10 @@
+.buttonRow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
 /* Schedule section description styles */
 .description {
   text-align: center;

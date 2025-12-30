@@ -22,14 +22,17 @@ export function ScenarioSection() {
         <p className={styles.description}>
           シナリオ通過報告リスト、GM可能シナリオリストを掲載します。
         </p>
-        <div style={{ marginTop: 20, textAlign: 'center' }}>
-          <Link to="/scenario" className="detailButton">
-            PASSED LIST
-          </Link>
+        <div className={styles.buttonRow} style={{ marginTop: 20 }}>
           <button
             type="button"
             className="detailButton"
-            style={{ marginLeft: 12 }}
+            onClick={() => goScenarioTab('passed')}
+          >
+            PASSED LIST
+          </button>
+          <button
+            type="button"
+            className="detailButton"
             onClick={() => goScenarioTab('gm-ready')}
           >
             GM LIST

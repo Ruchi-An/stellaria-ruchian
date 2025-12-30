@@ -26,10 +26,11 @@
 @media (max-width: 640px) {
   .homeGrid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
-    row-gap: 16px;
-    margin: -450px auto 26px; /* ヒーローにかぶせ気味に引き上げる */
-    padding: 0 12px;
+    gap: 8px;
+    row-gap: 10px;
+    margin: -400px auto 12px;
+    padding: 0 2vw;
+    justify-items: stretch;
   }
 }
 
@@ -79,8 +80,8 @@
 
 .detailButton {
   display: inline-block;
-  padding: clamp(6px, 2vw, 12px) clamp(12px, 5vw, 24px);
-  border-radius: clamp(10px, 4vw, 20px);
+  padding: clamp(4px, 1vw, 8px) clamp(8px, 3vw, 16px);
+  border-radius: clamp(8px, 3vw, 16px);
   font-weight: 600;
   background: linear-gradient(135deg, rgba(200, 220, 255, 0.3), rgba(180, 210, 255, 0.2));
   backdrop-filter: blur(12px);
@@ -93,7 +94,9 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
   transition: all 0.3s ease;
   text-decoration: none;
-  font-size: clamp(0.85rem, 2vw, 1.1rem);
+  font-size: clamp(0.60rem, 1.5vw, 0.95rem);
+  min-width: clamp(100px, 30vw, 140px);  /* 横幅：100px〜180pxで可変 */
+  min-height: clamp(32px, 5vw, 44px);    /* 縦幅：32px〜44pxで可変 */
 }
 
 .detailButton:visited,
@@ -119,6 +122,9 @@
     transform: translateY(40px) scale(0.98);
   }
   100% {
+  vertical-align: middle;
+  line-height: 1.6;
+  text-align: center;
     opacity: 1;
     transform: translateY(0) scale(1);
   }
