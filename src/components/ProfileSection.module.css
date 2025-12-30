@@ -1,0 +1,33 @@
+/* Profile section description styles */
+.description {
+  text-align: center;
+  font-size: clamp(0.1rem, 2.5vw, 1.1rem);
+  opacity: 0.85;
+  margin-top: 8px;
+}
+
+/* Profile section heading styles */
+.labelRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: clamp(0.1rem, 5vw, 2.2rem);
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  margin: 0 0 20px;
+  text-shadow:
+    0 0 10px rgba(150, 200, 255, 0.55),
+    0 0 20px rgba(100, 180, 255, 0.45),
+    0 0 30px rgba(120, 200, 255, 0.35);
+}
+
+.labelText {
+  opacity: 0.93;
+}
+
+.labelIcon {
+  color: var(--star-yellow, #ffd34d);
+  text-shadow: 0 0 8px rgba(250, 244, 127, 0.55);
+  font-size: clamp(0.1rem, 4vw, 1.3rem);
+}
