@@ -1,3 +1,41 @@
+/* ===============================
+   追加: Scenario.tsxのインラインstyle移動分
+   =============================== */
+
+.emptyMessage {
+  text-align: center;
+  padding: 40px 20px;
+  opacity: 0.6;
+}
+
+.gmCard {
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 20px;
+}
+
+.gmCardTitle {
+  margin: 0 0 12px 0;
+  font-size: 1.3rem;
+}
+
+.gmCardInfo {
+  margin: 6px 0;
+  opacity: 0.8;
+}
+
+.gmCardLink {
+  color: #96c8ff;
+  text-decoration: none;
+}
+
+.gmCardNotes {
+  margin: 12px 0 0 0;
+  opacity: 0.7;
+  font-size: 0.95rem;
+}
 .page {
   min-height: 100vh;
   color: #ffffff;

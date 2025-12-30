@@ -1,8 +1,11 @@
+// プロフィールページ用スタイルをインポート
 import styles from "./Profile.module.css";
 
+// プロフィールページ本体
 export function ProfilePage() {
   return (
     <main className={styles.page}>
+      {/* ヒーローセクション */}
       <section className={styles.hero}>
         <div className={styles.titleRow}>
           <span className={styles.titleIcon}>✦</span>
@@ -10,10 +13,11 @@ export function ProfilePage() {
           <span className={styles.titleIcon}>✦</span>
         </div>
       </section>
-      <div style={{ maxWidth: 960, margin: "0 auto", padding: "40px 20px" }}>
-        <p style={{ opacity: 0.85, marginTop: 8 }}>
-          まだ未実装です！！！
-          あ、夕星るちあ（せきせいるちあ）といいます！！！
+      {/* プロフィール本文 */}
+      <div className={styles.profileContent}>
+        <p className={styles.profileMessage}>
+          まだ未実装です！！！<br />
+          あ、夕星るちあ（せきせいるちあ）といいます！！！<br />
           よろしくお願いします！！！
         </p>
       </div>

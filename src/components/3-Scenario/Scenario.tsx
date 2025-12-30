@@ -161,14 +161,12 @@ export function ScenarioPage() {
         </div>
 
         {loading ? (
-          <div style={{ textAlign: "center", padding: "40px 20px", opacity: 0.6 }}>
-            Loading...
-          </div>
+          // ローディング表示
+          <div className={styles.emptyMessage}>Loading...</div>
         ) : activeTab === 'passed' ? (
           cards.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "40px 20px", opacity: 0.6 }}>
-              通過済みシナリオはまだありません。
-            </div>
+            // 通過済みシナリオがない場合
+            <div className={styles.emptyMessage}>通過済みシナリオはまだありません。</div>
           ) : (
             <div className={styles.cardGrid}>
               {cards.map((card) => (
@@ -178,33 +176,26 @@ export function ScenarioPage() {
           )
         ) : (
           gmCards.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "40px 20px", opacity: 0.6 }}>
-              GM可能シナリオはまだありません。
-            </div>
+            // GM可能シナリオがない場合
+            <div className={styles.emptyMessage}>GM可能シナリオはまだありません。</div>
           ) : (
             <div className={styles.cardGrid}>
               {gmCards.map((card) => (
-                <div key={card.id} style={{ 
-                  padding: "24px",
-                  background: "rgba(255, 255, 255, 0.05)",
-                  borderRadius: "12px",
-                  border: "1px solid rgba(255, 255, 255, 0.1)"
-                }}>
-                  <h3 style={{ margin: "0 0 12px 0", fontSize: "1.3rem" }}>{card.title}</h3>
-                  {card.category && <p style={{ margin: "6px 0", opacity: 0.8 }}>カテゴリ: {card.category}</p>}
-                  {card.production && <p style={{ margin: "6px 0", opacity: 0.8 }}>制作: {card.production}</p>}
-                  {card.creator && <p style={{ margin: "6px 0", opacity: 0.8 }}>作者: {card.creator}</p>}
-                  {card.recommendedPlayers && <p style={{ margin: "6px 0", opacity: 0.8 }}>推奨人数: {card.recommendedPlayers}</p>}
-                  {card.playTime && <p style={{ margin: "6px 0", opacity: 0.8 }}>プレイ時間: {card.playTime}</p>}
+                <div key={card.id} className={styles.gmCard}>
+                  <h3 className={styles.gmCardTitle}>{card.title}</h3>
+                  {card.category && <p className={styles.gmCardInfo}>カテゴリ: {card.category}</p>}
+                  {card.production && <p className={styles.gmCardInfo}>制作: {card.production}</p>}
+                  {card.creator && <p className={styles.gmCardInfo}>作者: {card.creator}</p>}
+                  {card.recommendedPlayers && <p className={styles.gmCardInfo}>推奨人数: {card.recommendedPlayers}</p>}
+                  {card.playTime && <p className={styles.gmCardInfo}>プレイ時間: {card.playTime}</p>}
                   {card.scenarioUrl && (
-                    <p style={{ margin: "6px 0" }}>
-                      <a href={card.scenarioUrl} target="_blank" rel="noopener noreferrer" 
-                         style={{ color: "#96c8ff", textDecoration: "none" }}>
+                    <p className={styles.gmCardInfo}>
+                      <a href={card.scenarioUrl} target="_blank" rel="noopener noreferrer" className={styles.gmCardLink}>
                         シナリオリンク
                       </a>
                     </p>
                   )}
-                  {card.notes && <p style={{ margin: "12px 0 0 0", opacity: 0.7, fontSize: "0.95rem" }}>{card.notes}</p>}
+                  {card.notes && <p className={styles.gmCardNotes}>{card.notes}</p>}
                 </div>
               ))}
             </div>

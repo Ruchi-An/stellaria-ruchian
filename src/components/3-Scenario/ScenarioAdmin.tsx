@@ -734,11 +734,11 @@ export function ScenarioAdminPage() {
                       {card.cardImageUrl && <a href={card.cardImageUrl} target="_blank" rel="noreferrer" className={styles.smallLink}>画像</a>}
                       {card.scenarioUrl && <a href={card.scenarioUrl} target="_blank" rel="noreferrer" className={styles.smallLink}>シナリオ</a>}
                       {card.streamUrl && <a href={card.streamUrl} target="_blank" rel="noreferrer" className={styles.smallLink}>配信</a>}
+                      {/* GM可能シナリオへ連携ボタン。右余白用クラスを追加 */}
                       <button
                         type="button"
-                        className={styles.secondaryButton}
+                        className={styles.secondaryButton + ' ' + styles.copyToGMButton}
                         onClick={() => handleCopyToGM(card)}
-                        style={{ marginRight: 8 }}
                       >
                         GM可能シナリオへ連携
                       </button>

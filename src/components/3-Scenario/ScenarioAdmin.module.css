@@ -1,3 +1,10 @@
+/* ===============================
+   追加: ScenarioAdmin.tsxのインラインstyle移動分
+   =============================== */
+
+.copyToGMButton {
+  margin-right: 8px;
+}
 /* タブUI（Scenarioページと統一） */
 .tabs {
   display: flex;

@@ -299,7 +299,7 @@ export function ScheduleAdminPage() {
     try {
       const dataToSave = {
         title: formData.title,
-        play_date: formData.play_date,
+        play_date: formData.play_date === '' ? null : formData.play_date,
         start_time: formData.start_time || null,
         end_time: formData.end_time || null,
         type: formData.type || null,
@@ -385,7 +385,8 @@ export function ScheduleAdminPage() {
       {loading ? (
         <section className={sharedStyles.calendarSection}>
           <div className={sharedStyles.calendarCard}>
-            <p style={{ textAlign: 'center', padding: '2rem' }}>読み込み中...</p>
+            {/* 読み込み中メッセージ用クラスを適用 */}
+            <p className={sharedStyles.loadingMessage}>読み込み中...</p>
           </div>
         </section>
       ) : (
@@ -560,7 +561,8 @@ export function ScheduleAdminPage() {
       )}
 
       {/* 日にち未定の予定セクション */}
-      <section className={sharedStyles.calendarSection} style={{ marginTop: '32px' }}>
+      {/* 日にち未定の予定セクション。marginTop用クラスを追加 */}
+      <section className={sharedStyles.calendarSection + ' ' + sharedStyles.undefinedSectionMargin}>
         <div className={sharedStyles.undefinedSection}>
           <button
             className={sharedStyles.undefinedToggleButton}

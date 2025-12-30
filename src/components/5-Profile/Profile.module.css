@@ -1,3 +1,17 @@
+/* ===============================
+   追加: Profile.tsxのインラインstyle移動分
+   =============================== */
+
+.profileContent {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.profileMessage {
+  opacity: 0.85;
+  margin-top: 8px;
+}
 .page {
   min-height: 100vh;
   color: #ffffff;

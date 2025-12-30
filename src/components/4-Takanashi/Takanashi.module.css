@@ -1,3 +1,17 @@
+/* ===============================
+   追加: Takanashi.tsxのインラインstyle移動分
+   =============================== */
+
+.takanashiContent {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.takanashiMessage {
+  opacity: 0.85;
+  margin-top: 8px;
+}
 .page {
   min-height: 100vh;
   color: #ffffff;

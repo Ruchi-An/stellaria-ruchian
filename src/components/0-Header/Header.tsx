@@ -1,10 +1,14 @@
+// Reactのフック・ルーター・スタイルをインポート
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './Header.module.css';
 
+// ヘッダーコンポーネント本体
 export default function Header() {
+  // メニュー開閉状態
   const [open, setOpen] = useState(false);
 
+  // Escapeキーでメニューを閉じる
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setOpen(false);
@@ -13,11 +17,14 @@ export default function Header() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
 
+  // メニューの開閉トグル
   const toggleMenu = () => setOpen((v) => !v);
+  // メニューを閉じる
   const closeMenu = () => setOpen(false);
 
   return (
     <header className={styles.header}>
+      {/* ハンバーガーメニューボタン */}
       <button
         type="button"
         className={styles.menuButton}
@@ -33,6 +40,7 @@ export default function Header() {
         </span>
       </button>
 
+      {/* ナビゲーションメニュー */}
       <nav
         id="header-menu"
         className={`${styles.nav} ${open ? styles.navOpen : styles.navClosed}`}

@@ -1,8 +1,11 @@
+// 小鳥遊ページ用スタイルをインポート
 import styles from "./Takanashi.module.css";
 
+// 小鳥遊ページ本体
 export function TakanashiPage() {
   return (
     <main className={styles.page}>
+      {/* ヒーローセクション */}
       <section className={styles.hero}>
         <div className={styles.titleRow}>
           <span className={styles.titleIcon}>✦</span>
@@ -10,9 +13,10 @@ export function TakanashiPage() {
           <span className={styles.titleIcon}>✦</span>
         </div>
       </section>
-      <div style={{ maxWidth: 960, margin: "0 auto", padding: "40px 20px" }}>
-        <p style={{ opacity: 0.85, marginTop: 8 }}>
-          まだ未実装です！！
+      {/* 本文 */}
+      <div className={styles.takanashiContent}>
+        <p className={styles.takanashiMessage}>
+          まだ未実装です！！<br />
           小鳥遊村に関することを載せたい思い！！！
         </p>
       </div>

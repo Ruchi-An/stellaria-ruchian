@@ -1,3 +1,15 @@
+/* ===============================
+   追加: Schedule.tsxのインラインstyle移動分
+   =============================== */
+
+.loadingMessage {
+  text-align: center;
+  padding: 2rem;
+}
+
+.undefinedSectionMargin {
+  margin-top: 32px;
+}
 /* ====================================
    共通スタイル：ページレイアウト・ヒーローセクション
    ==================================== */
@@ -289,7 +301,7 @@
 .dayCell {
   position: relative;
   min-height: clamp(70px, 12vw, 140px);
-  padding: clamp(4px, 0.8vw, 10px);
+  padding: clamp(2px, 1.0vw, 8px);
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.16);
   background: rgba(255, 255, 255, 0.06);
@@ -309,8 +321,12 @@
 }
 
 .dateNumber {
-  display: inline;
+  display: inline-block;
   font-weight: 700;
+  font-size: clamp(0.5rem, 2vw, 1.2rem);
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: 1;
 }
 
 .sundayDate {
@@ -666,6 +682,17 @@
 }
 
 @media (max-width: 640px) {
+  /* .dayCell の padding は元に戻す */
+  .dateNumber {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  .eventList {
+    margin-top: 1px !important;
+    margin-bottom: 2px !important;
+  }
   .page {
     padding: 0 10px 72px;
   }
