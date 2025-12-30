@@ -16,8 +16,8 @@ export function ProfileSection() {
           <span className={styles.labelText}>Profile</span>
           <span className={styles.labelIcon}>✦</span>
         </div>
-        <p style={{ opacity: 0.85, marginTop: 8 }}>
-          プロフィール、活動履歴、リンク集などを掲載します。
+        <p className={styles.description}>
+          （未実装）
         </p>
         <div style={{ marginTop: 20, textAlign: 'center' }}>
           <Link to="/profile" className="detailButton">

@@ -16,7 +16,7 @@ export function ScheduleSection() {
           <span className={styles.labelText}>Schedule</span>
           <span className={styles.labelIcon}>✦</span>
         </div>
-        <p style={{ opacity: 0.85, marginTop: 8 }}>
+        <p className={styles.description}>
           直近のスケジュールや配信予定を掲載します。
         </p>
         <div style={{ marginTop: 20, textAlign: 'center' }}>

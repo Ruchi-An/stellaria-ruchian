@@ -16,8 +16,8 @@ export function TakanashiSection() {
           <span className={styles.labelText}>Takanashi</span>
           <span className={styles.labelIcon}>✦</span>
         </div>
-        <p style={{ opacity: 0.85, marginTop: 8 }}>
-          『小鳥が遊ぶ村』―通称『小鳥遊村』関連の紹介、企画などをまとめます。
+        <p className={styles.description}>
+          （未実装）
         </p>
         <div style={{ marginTop: 20, textAlign: 'center' }}>
           <Link to="/takanashi" className="detailButton">

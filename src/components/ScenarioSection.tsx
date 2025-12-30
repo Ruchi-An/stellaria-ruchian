@@ -1,9 +1,12 @@
+
 import type { CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import styles from './ScenarioSection.module.css';
+import { useScenarioTabNavigate } from '../lib/useScenarioTabNavigate';
 
 export function ScenarioSection() {
   const sectionStyle = { '--float-delay': '0.2s' } as CSSProperties;
+  const goScenarioTab = useScenarioTabNavigate();
 
   return (
     <section
@@ -16,18 +19,22 @@ export function ScenarioSection() {
           <span className={styles.labelText}>Scenario</span>
           <span className={styles.labelIcon}>✦</span>
         </div>
-        <p style={{ opacity: 0.85, marginTop: 8 }}>
+        <p className={styles.description}>
           シナリオ通過報告リスト、GM可能シナリオリストを掲載します。
         </p>
         <div style={{ marginTop: 20, textAlign: 'center' }}>
           <Link to="/scenario" className="detailButton">
             PASSED LIST
           </Link>
-          <Link to="/scenario" className="detailButton">
+          <button
+            type="button"
+            className="detailButton"
+            style={{ marginLeft: 12 }}
+            onClick={() => goScenarioTab('gm-ready')}
+          >
             GM LIST
-          </Link>
+          </button>
         </div>
-
       </div>
     </section>
   );

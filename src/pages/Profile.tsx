@@ -12,17 +12,10 @@ export function ProfilePage() {
       </section>
       <div style={{ maxWidth: 960, margin: "0 auto", padding: "40px 20px" }}>
         <p style={{ opacity: 0.85, marginTop: 8 }}>
-          自己紹介、活動履歴、SNS・リンクなどをまとめます。
+          まだ未実装です！！！
+          あ、夕星るちあ（せきせいるちあ）といいます！！！
+          よろしくお願いします！！！
         </p>
-        <section style={{ marginTop: 24 }}>
-          <div style={{ background: "rgba(15, 47, 128, 0.6)", padding: 16, borderRadius: 10 }}>
-            <strong>例</strong>
-            <ul style={{ marginTop: 8 }}>
-              <li>略歴</li>
-              <li>受賞/出演情報</li>
-            </ul>
-          </div>
-        </section>
       </div>
     </main>
   );

@@ -4,17 +4,18 @@
 
 .homeGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 32px;
-  row-gap: 40px;
-  max-width: 1200px;
-  margin: 28px auto 50px;
-  padding: 0 20px;
-  align-items: start;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(10px, 4vw, 32px);
+  row-gap: clamp(16px, 5vw, 40px);
+  max-width: clamp(320px, 90vw, 1200px);
+  margin: clamp(8px, 4vw, 28px) auto clamp(20px, 6vw, 50px);
+  padding: 0 clamp(4px, 4vw, 20px);
+  align-items: stretch;
 }
 
 @media (max-width: 900px) {
   .homeGrid {
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
     row-gap: 24px;
     margin: -200px auto 36px; /* さらに上に寄せる */
@@ -24,6 +25,7 @@
 
 @media (max-width: 640px) {
   .homeGrid {
+    grid-template-columns: repeat(2, 1fr);
     gap: 14px;
     row-gap: 16px;
     margin: -450px auto 26px; /* ヒーローにかぶせ気味に引き上げる */
@@ -41,10 +43,10 @@
 }
 
 .cardSection {
-  max-width: 600px;
+  max-width: clamp(260px, 80vw, 600px);
   margin: 0;
-  padding: 72px 20px;
-  border-radius: 24px;
+  padding: clamp(24px, 10vw, 72px) clamp(8px, 5vw, 20px);
+  border-radius: clamp(10px, 4vw, 24px);
   border: 2px solid rgba(255, 255, 255, 0.3);
   background: linear-gradient(
     135deg,
@@ -61,6 +63,8 @@
   backdrop-filter: blur(20px) saturate(150%);
   -webkit-backdrop-filter: blur(20px) saturate(150%);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  font-size: clamp(0.85rem, 2.5vw, 1.15rem);
+  height: 100%;
 }
 
 .cardSection:hover {
@@ -75,8 +79,8 @@
 
 .detailButton {
   display: inline-block;
-  padding: 12px 24px;
-  border-radius: 20px;
+  padding: clamp(6px, 2vw, 12px) clamp(12px, 5vw, 24px);
+  border-radius: clamp(10px, 4vw, 20px);
   font-weight: 600;
   background: linear-gradient(135deg, rgba(200, 220, 255, 0.3), rgba(180, 210, 255, 0.2));
   backdrop-filter: blur(12px);
@@ -89,6 +93,7 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
   transition: all 0.3s ease;
   text-decoration: none;
+  font-size: clamp(0.85rem, 2vw, 1.1rem);
 }
 
 .detailButton:visited,

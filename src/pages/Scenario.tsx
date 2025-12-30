@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import type { ScenarioCard as ScenarioCardType, GMScenarioCard } from "../types/scenario";
 import { ScenarioCard } from "../components/ScenarioCard";
 import { supabase } from "../lib/supabaseClient";
@@ -7,7 +8,22 @@ import styles from "./Scenario.module.css";
 type TabType = 'passed' | 'gm-ready';
 
 export function ScenarioPage() {
-  const [activeTab, setActiveTab] = useState<TabType>('passed');
+  const location = useLocation();
+  const getInitialTab = (): TabType => {
+    const params = new URLSearchParams(location.search);
+    const tab = params.get('tab');
+    if (tab === 'gm-ready') return 'gm-ready';
+    return 'passed';
+  };
+  const [activeTab, setActiveTab] = useState<TabType>(getInitialTab());
+
+  // クエリパラメータが変わったらタブも切り替え
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tab = params.get('tab');
+    if (tab === 'gm-ready') setActiveTab('gm-ready');
+    else setActiveTab('passed');
+  }, [location.search]);
   const [cards, setCards] = useState<ScenarioCardType[]>([]);
   const [gmCards, setGmCards] = useState<GMScenarioCard[]>([]);
   const [loading, setLoading] = useState(true);
