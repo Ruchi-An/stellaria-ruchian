@@ -1,17 +1,17 @@
 import { Routes, Route } from 'react-router-dom';
-import Header from './components/Header/Header.tsx';
-import Footer from './components/Footer/Footer.tsx';
-import HeroSection from './components/HeroSection';
-import { ScheduleSection } from './components/ScheduleSection';
-import { ScenarioSection } from './components/ScenarioSection';
-import { TakanashiSection } from './components/TakanashiSection';
-import { ProfileSection } from './components/ProfileSection';
-import { SchedulePage } from './pages/Schedule';
-import { ScheduleAdminPage } from './pages/ScheduleAdmin';
-import { ScenarioPage } from './pages/Scenario';
-import { ScenarioAdminPage } from './pages/ScenarioAdmin';
-import { TakanashiPage } from './pages/Takanashi';
-import { ProfilePage } from './pages/Profile';
+import Header from './components/0-Header/Header.tsx';
+import Footer from './components/0-Footer/Footer.tsx';
+import HeroSection from './components/1-Top/HeroSection.tsx';
+import { ScheduleSection } from './components/1-Top/ScheduleSection.tsx';
+import { ScenarioSection } from './components/1-Top/ScenarioSection.tsx';
+import { TakanashiSection } from './components/1-Top/TakanashiSection.tsx';
+import { ProfileSection } from './components/1-Top/ProfileSection.tsx';
+import { SchedulePage } from './components/2-Schedule/Schedule.tsx';
+import { ScheduleAdminPage } from './components/2-Schedule/ScheduleAdmin.tsx';
+import { ScenarioPage } from './components/3-Scenario/Scenario.tsx';
+import { ScenarioAdminPage } from './components/3-Scenario/ScenarioAdmin.tsx';
+import { TakanashiPage } from './components/4-Takanashi/Takanashi.tsx';
+import { ProfilePage } from './components/5-Profile/Profile.tsx';
 import './styles/sections.css';
 
 export default function App() {

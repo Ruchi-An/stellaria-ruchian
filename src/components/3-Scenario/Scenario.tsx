@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import type { ScenarioCard as ScenarioCardType, GMScenarioCard } from "../types/scenario";
-import { ScenarioCard } from "../components/ScenarioCard";
-import { supabase } from "../lib/supabaseClient";
+import type { ScenarioCard as ScenarioCardType, GMScenarioCard } from "../../types/scenario";
+import { ScenarioCard } from "./ScenarioCard";
+import { supabase } from "../../lib/supabaseClient";
 import styles from "./Scenario.module.css";
 
 type TabType = 'passed' | 'gm-ready';

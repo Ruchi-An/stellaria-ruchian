@@ -1,8 +1,7 @@
 
 import type { CSSProperties } from "react";
-import { Link } from "react-router-dom";
 import styles from './ScenarioSection.module.css';
-import { useScenarioTabNavigate } from '../lib/useScenarioTabNavigate';
+import { useScenarioTabNavigate } from '../../lib/useScenarioTabNavigate';
 
 export function ScenarioSection() {
   const sectionStyle = { '--float-delay': '0.2s' } as CSSProperties;

@@ -4,10 +4,10 @@ const TABS = [
   { key: "scenario", label: "通過済みシナリオ管理" },
   { key: "gm", label: "GMシナリオ管理" },
 ];
-import sharedStyles from "./Schedule.shared.module.css";
+import sharedStyles from "../2-Schedule/Schedule.shared.module.css";
 import styles from "./ScenarioAdmin.module.css";
-import { supabase } from "../lib/supabaseClient";
-import type { ScenarioCard, GMScenarioCard } from "../types/scenario";
+import { supabase } from "../../lib/supabaseClient";
+import type { ScenarioCard, GMScenarioCard } from "../../types/scenario";
 
 
 const SCENARIO_TABLE = "tsuka_scenario_list";

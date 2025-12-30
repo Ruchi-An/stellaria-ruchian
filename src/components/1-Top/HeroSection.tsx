@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import styles from './HeroSection.module.css';
-import { supabase } from '../lib/supabaseClient';
+import { supabase } from '../../lib/supabaseClient';
 
 type ScheduleItem = {
   id: number;

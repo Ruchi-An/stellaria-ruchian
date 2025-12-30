@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { ScenarioCard } from '../types/scenario';
+import type { ScenarioCard } from '../../types/scenario';
 import styles from './ScenarioCard.module.css';
 
 interface ScenarioCardProps {
