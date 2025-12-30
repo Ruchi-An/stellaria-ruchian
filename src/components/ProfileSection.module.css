@@ -12,7 +12,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-size: clamp(1.5rem, 5vw, 2.2rem);
+  font-size: clamp(0.1rem, 5vw, 2.2rem);
   letter-spacing: 0.05em;
   font-weight: 700;
   margin: 0 0 20px;
@@ -29,5 +29,5 @@
 .labelIcon {
   color: var(--star-yellow, #ffd34d);
   text-shadow: 0 0 8px rgba(250, 244, 127, 0.55);
-  font-size: clamp(1.0rem, 4vw, 1.3rem);
+  font-size: clamp(0.1rem, 4vw, 1.3rem);
 }
