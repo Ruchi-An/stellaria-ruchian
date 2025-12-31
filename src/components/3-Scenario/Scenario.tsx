@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import type { ScenarioCard as ScenarioCardType, GMScenarioCard } from "../../types/scenario";
@@ -27,6 +28,15 @@ export function ScenarioPage() {
   const [cards, setCards] = useState<ScenarioCardType[]>([]);
   const [gmCards, setGmCards] = useState<GMScenarioCard[]>([]);
   const [loading, setLoading] = useState(true);
+  // フィルター用ステート
+  const [categoryFilter, setCategoryFilter] = useState<string>('');
+  const [gmFilter, setGmFilter] = useState<string>('');
+  const [plFilter, setPlFilter] = useState<string>('');
+  const [titleSearch, setTitleSearch] = useState<string>('');
+  const [memberSearch, setMemberSearch] = useState<string>('');
+    // 検索・フィルター表示トグル
+  const [showSearch, setShowSearch] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
 
   useEffect(() => {
     const fetchCards = async () => {
@@ -133,6 +143,23 @@ export function ScenarioPage() {
     fetchCards();
   }, []);
 
+  // フィルター適用
+  const filteredCards = cards.filter(card => {
+    // 1段目: 検索
+    const titleMatch = titleSearch ? card.title.toLowerCase().includes(titleSearch.toLowerCase()) : true;
+    const memberSearchMatch = memberSearch ? card.members.some(m => m.toLowerCase().includes(memberSearch.toLowerCase())) : true;
+    // 2段目: selectフィルター
+    const categoryMatch = categoryFilter ? card.category === categoryFilter : true;
+    const gmMatch = gmFilter ? (card.gmSt && card.gmSt.includes(gmFilter)) : true;
+    const plMatch = plFilter ? (card.playerCharacter && card.playerCharacter.includes(plFilter)) : true;
+    return titleMatch && memberSearchMatch && categoryMatch && gmMatch && plMatch;
+  });
+
+  // カテゴリー・GM・メンバーの選択肢を抽出
+  const categoryOptions = Array.from(new Set(cards.map(card => card.category).filter(Boolean)));
+  const gmOptions = Array.from(new Set(cards.map(card => card.gmSt).filter(Boolean)));
+  const plOptions = Array.from(new Set(cards.map(card => card.playerCharacter).filter(Boolean)));
+
   return (
     <main className={styles.page}>
       <section className={styles.hero}>
@@ -160,16 +187,109 @@ export function ScenarioPage() {
           </button>
         </div>
 
+        {/* フィルターUI: 通過済みタブのみ表示 */}
+        {activeTab === 'passed' && (
+          <div className={styles.filterLayout}>
+            {/* 左：検索欄 */}
+            <div className={styles.filterSide}>
+              <button
+                className={styles.filterToggleBtn}
+                onClick={() => setShowSearch(s => !s)}
+              >
+                {showSearch ? '▲ 検索を閉じる' : '▼ 検索'}
+              </button>
+              {showSearch && (
+                <div className={`${styles.filterRow} ${styles.filterColumn}`}>
+                  <button
+                    className={styles.filterCloseBtn}
+                    aria-label="検索クリア"
+                    onClick={() => { setTitleSearch(''); setMemberSearch(''); }}
+                  >
+                    ×
+                  </button>
+                  <div className={styles.filterRowItem}>
+                    <label htmlFor="search-title">タイトル：</label>
+                    <input
+                      id="search-title"
+                      type="text"
+                      value={titleSearch}
+                      onChange={e => setTitleSearch(e.target.value)}
+                      placeholder="タイトル名"
+                    />
+                  </div>
+                  <div className={styles.filterRowItem}>
+                    <label htmlFor="search-member">人物：</label>
+                    <input
+                      id="search-member"
+                      type="text"
+                      value={memberSearch}
+                      onChange={e => setMemberSearch(e.target.value)}
+                      placeholder="人物名"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+            {/* 右：フィルター欄 */}
+            <div className={styles.filterSide}>
+              <button
+                className={styles.filterToggleBtn}
+                onClick={() => setShowFilter(s => !s)}
+              >
+                {showFilter ? '▲ フィルターを閉じる' : '▼ フィルター'}
+              </button>
+              {showFilter && (
+                <div className={`${styles.filterRow} ${styles.filterColumn}`}>
+                  <button
+                    className={styles.filterCloseBtn}
+                    aria-label="フィルタークリア"
+                    onClick={() => { setCategoryFilter(''); setGmFilter(''); setPlFilter(''); }}
+                  >
+                    ×
+                  </button>
+                  <div className={styles.filterRowItem}>
+                    <label htmlFor="filter-category">カテゴリ：</label>
+                    <select id="filter-category" value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)}>
+                      <option value="">全て</option>
+                      {categoryOptions.map(opt => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className={styles.filterRowItem}>
+                    <label htmlFor="filter-gm">GM/ST：</label>
+                    <select id="filter-gm" value={gmFilter} onChange={e => setGmFilter(e.target.value)}>
+                      <option value="">全て</option>
+                      {gmOptions.map(opt => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className={styles.filterRowItem}>
+                    <label htmlFor="filter-pl">PL：</label>
+                    <select id="filter-pl" value={plFilter} onChange={e => setPlFilter(e.target.value)}>
+                      <option value="">全て</option>
+                      {plOptions.map(opt => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {loading ? (
           // ローディング表示
           <div className={styles.emptyMessage}>Loading...</div>
         ) : activeTab === 'passed' ? (
-          cards.length === 0 ? (
+          filteredCards.length === 0 ? (
             // 通過済みシナリオがない場合
             <div className={styles.emptyMessage}>通過済みシナリオはまだありません。</div>
           ) : (
             <div className={styles.cardGrid}>
-              {cards.map((card) => (
+              {filteredCards.map((card) => (
                 <ScenarioCard key={card.passNumber} card={card} />
               ))}
             </div>

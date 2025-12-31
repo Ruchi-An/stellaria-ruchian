@@ -75,7 +75,7 @@ export function ScheduleAdminPage() {
   const [gameNames, setGameNames] = useState<string[]>([]);
   const [isUndefinedSchedulesOpen, setIsUndefinedSchedulesOpen] = useState(true);
   const holidays = new Holidays('JP');
-  
+
   const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
   // フォーム用の状態
@@ -347,7 +347,7 @@ export function ScheduleAdminPage() {
   // 削除処理
   const handleDelete = async () => {
     if (!editingEvent || !editingEvent.id) return;
-    
+
     if (!confirm('本当に削除しますか？')) return;
 
     try {
@@ -391,173 +391,173 @@ export function ScheduleAdminPage() {
         </section>
       ) : (
         <section className={sharedStyles.calendarSection}>
-        <div className={sharedStyles.calendarCard}>
-          <header className={sharedStyles.calendarHeader}>
-            <button 
-              className={styles.createButton}
-              onClick={handleCreateNew}
-              aria-label="新規作成"
-              title="新しいスケジュールを作成"
-            >
-              ＋
-            </button>
-            <div className={sharedStyles.legendContainer}>
-              <div className={sharedStyles.legend}>
-                <div className={sharedStyles.legendItem}>
-                  <span className={`${sharedStyles.legendDot} ${sharedStyles.legendMorning}`} />
-                  <span className={sharedStyles.legendText}>朝</span>
-                </div>
-              </div>
-              <div className={sharedStyles.legend}>
-                <div className={sharedStyles.legendItem}>
-                  <span className={`${sharedStyles.legendDot} ${sharedStyles.legendAfternoon}`} />
-                  <span className={sharedStyles.legendText}>昼</span>
-                </div>
-              </div>
-              <div className={sharedStyles.legend}>
-                <div className={sharedStyles.legendItem}>
-                  <span className={`${sharedStyles.legendDot} ${sharedStyles.legendEvening}`} />
-                  <span className={sharedStyles.legendText}>夜</span>
-                </div>
-              </div>
-              <div className={sharedStyles.legend}>
-                <div className={sharedStyles.legendItem}>
-                  <span className={`${sharedStyles.legendDot} ${sharedStyles.legendLateNight}`} />
-                  <span className={sharedStyles.legendText}>深夜</span>
-                </div>
-              </div>
-              <div className={sharedStyles.legend}>
-                <div className={sharedStyles.legendItem}>
-                  <span className={`${sharedStyles.legendDot} ${sharedStyles.legendUndefined}`} />
-                  <span className={sharedStyles.legendText}>時間未定</span>
-                </div>
-              </div>
-            </div>
-            <div className={sharedStyles.dateNavigationContainer}>
-              <button 
-                className={sharedStyles.navButton} 
-                onClick={handlePrevMonth}
-                aria-label="前月"
+          <div className={sharedStyles.calendarCard}>
+            <header className={sharedStyles.calendarHeader}>
+              <button
+                className={styles.createButton}
+                onClick={handleCreateNew}
+                aria-label="新規作成"
+                title="新しいスケジュールを作成"
               >
-                ←
+                ＋
               </button>
-              <select
-                value={year}
-                onChange={handleYearChange}
-                className={sharedStyles.dateSelector}
-                aria-label="年を選択"
-              >
-                {yearOptions.map((y) => (
-                  <option key={y} value={y}>
-                    {y}年
-                  </option>
-                ))}
-              </select>
-              <select
-                value={monthIndex}
-                onChange={handleMonthChange}
-                className={sharedStyles.dateSelector}
-                aria-label="月を選択"
-              >
-                {Array.from({ length: 12 }, (_, i) => (
-                  <option key={i} value={i}>
-                    {String(i + 1).padStart(2, "0")}月
-                  </option>
-                ))}
-              </select>
-              <button 
-                className={sharedStyles.navButton} 
-                onClick={handleNextMonth}
-                aria-label="次月"
-              >
-                →
-              </button>
-            </div>
-          </header>
-
-          <div className={sharedStyles.weekRow}>
-            {weekdayLabels.map((day) => (
-              <span key={day} className={sharedStyles.weekLabel}>
-                {day}
-              </span>
-            ))}
-          </div>
-
-          <div className={sharedStyles.calendarGrid}>
-            {calendarCells.map((cell) => {
-              const classNames = [sharedStyles.dayCell];
-              if (cell.isToday) classNames.push(sharedStyles.today);
-              if (cell.events.length > 0) classNames.push(sharedStyles.hasEvent);
-              if (cell.isEmpty) classNames.push(sharedStyles.empty);
-              if (!cell.isEmpty) classNames.push(styles.clickable);
-
-              return (
-                <div 
-                  key={cell.key} 
-                  className={classNames.join(" ")}
-                  onClick={() => !cell.isEmpty && handleCellClick(cell.key)}
+              <div className={sharedStyles.legendContainer}>
+                <div className={sharedStyles.legend}>
+                  <div className={sharedStyles.legendItem}>
+                    <span className={`${sharedStyles.legendDot} ${sharedStyles.legendMorning}`} />
+                    <span className={sharedStyles.legendText}>朝</span>
+                  </div>
+                </div>
+                <div className={sharedStyles.legend}>
+                  <div className={sharedStyles.legendItem}>
+                    <span className={`${sharedStyles.legendDot} ${sharedStyles.legendAfternoon}`} />
+                    <span className={sharedStyles.legendText}>昼</span>
+                  </div>
+                </div>
+                <div className={sharedStyles.legend}>
+                  <div className={sharedStyles.legendItem}>
+                    <span className={`${sharedStyles.legendDot} ${sharedStyles.legendEvening}`} />
+                    <span className={sharedStyles.legendText}>夜</span>
+                  </div>
+                </div>
+                <div className={sharedStyles.legend}>
+                  <div className={sharedStyles.legendItem}>
+                    <span className={`${sharedStyles.legendDot} ${sharedStyles.legendLateNight}`} />
+                    <span className={sharedStyles.legendText}>深夜</span>
+                  </div>
+                </div>
+                <div className={sharedStyles.legend}>
+                  <div className={sharedStyles.legendItem}>
+                    <span className={`${sharedStyles.legendDot} ${sharedStyles.legendUndefined}`} />
+                    <span className={sharedStyles.legendText}>時間未定</span>
+                  </div>
+                </div>
+              </div>
+              <div className={sharedStyles.dateNavigationContainer}>
+                <button
+                  className={sharedStyles.navButton}
+                  onClick={handlePrevMonth}
+                  aria-label="前月"
                 >
-                  {(() => {
-                    const dateClasses = [sharedStyles.dateNumber];
-                    if (cell.isHoliday) {
-                      dateClasses.push(sharedStyles.holidayDate);
-                    } else if (cell.weekday === 0) {
-                      dateClasses.push(sharedStyles.sundayDate);
-                    } else if (cell.weekday === 6) {
-                      dateClasses.push(sharedStyles.saturdayDate);
-                    }
-                    return <span className={dateClasses.join(' ')}>{cell.label}</span>;
-                  })()}
-                  {cell.events.length > 0 && (
-                    <ul className={sharedStyles.eventList}>
-                      {cell.events.map((event) => {
-                        const timeCategory = getTimeCategory(event.start_time);
-                        const startLabel = event.start_time || "未定";
-                        const timeDisplay = event.end_time ? `${startLabel}-${event.end_time}` : startLabel;
-                        const categoryDisplay = event.category || "未分類";
-                        return (
-                          <li 
-                            key={`${event.id}-${event.title}`} 
-                            className={`${sharedStyles.eventChip} ${sharedStyles[`event-${timeCategory}`]}`}
-                            onClick={(e) => handleEventClick(event, e)}
-                            role="button"
-                            tabIndex={0}
-                            onKeyPress={(e) => {
-                              if (e.key === 'Enter' || e.key === ' ') {
-                                handleEventClick(event, e as unknown as React.MouseEvent);
-                              }
-                            }}
-                          >
-                            <div className={sharedStyles.eventText}>
-                              <span className={sharedStyles.eventTitleRow}>
-                                <span
-                                  className={sharedStyles.eventCategory}
-                                  title={categoryDisplay}
-                                >
-                                  {categoryDisplay}
-                                </span>
-                                {event.title && (
+                  ←
+                </button>
+                <select
+                  value={year}
+                  onChange={handleYearChange}
+                  className={sharedStyles.dateSelector}
+                  aria-label="年を選択"
+                >
+                  {yearOptions.map((y) => (
+                    <option key={y} value={y}>
+                      {y}年
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={monthIndex}
+                  onChange={handleMonthChange}
+                  className={sharedStyles.dateSelector}
+                  aria-label="月を選択"
+                >
+                  {Array.from({ length: 12 }, (_, i) => (
+                    <option key={i} value={i}>
+                      {String(i + 1).padStart(2, "0")}月
+                    </option>
+                  ))}
+                </select>
+                <button
+                  className={sharedStyles.navButton}
+                  onClick={handleNextMonth}
+                  aria-label="次月"
+                >
+                  →
+                </button>
+              </div>
+            </header>
+
+            <div className={sharedStyles.weekRow}>
+              {weekdayLabels.map((day) => (
+                <span key={day} className={sharedStyles.weekLabel}>
+                  {day}
+                </span>
+              ))}
+            </div>
+
+            <div className={sharedStyles.calendarGrid}>
+              {calendarCells.map((cell) => {
+                const classNames = [sharedStyles.dayCell];
+                if (cell.isToday) classNames.push(sharedStyles.today);
+                if (cell.events.length > 0) classNames.push(sharedStyles.hasEvent);
+                if (cell.isEmpty) classNames.push(sharedStyles.empty);
+                if (!cell.isEmpty) classNames.push(styles.clickable);
+
+                return (
+                  <div
+                    key={cell.key}
+                    className={classNames.join(" ")}
+                    onClick={() => !cell.isEmpty && handleCellClick(cell.key)}
+                  >
+                    {(() => {
+                      const dateClasses = [sharedStyles.dateNumber];
+                      if (cell.isHoliday) {
+                        dateClasses.push(sharedStyles.holidayDate);
+                      } else if (cell.weekday === 0) {
+                        dateClasses.push(sharedStyles.sundayDate);
+                      } else if (cell.weekday === 6) {
+                        dateClasses.push(sharedStyles.saturdayDate);
+                      }
+                      return <span className={dateClasses.join(' ')}>{cell.label}</span>;
+                    })()}
+                    {cell.events.length > 0 && (
+                      <ul className={sharedStyles.eventList}>
+                        {cell.events.map((event) => {
+                          const timeCategory = getTimeCategory(event.start_time);
+                          const startLabel = event.start_time || "未定";
+                          const timeDisplay = event.end_time ? `${startLabel}-${event.end_time}` : startLabel;
+                          const categoryDisplay = event.category || "未分類";
+                          return (
+                            <li
+                              key={`${event.id}-${event.title}`}
+                              className={`${sharedStyles.eventChip} ${sharedStyles[`event-${timeCategory}`]}`}
+                              onClick={(e) => handleEventClick(event, e)}
+                              role="button"
+                              tabIndex={0}
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                  handleEventClick(event, e as unknown as React.MouseEvent);
+                                }
+                              }}
+                            >
+                              <div className={sharedStyles.eventText}>
+                                <span className={sharedStyles.eventTitleRow}>
                                   <span
-                                    className={sharedStyles.eventTitle}
-                                    title={event.title}
+                                    className={sharedStyles.eventCategory}
+                                    title={categoryDisplay}
                                   >
-                                    {event.title}
+                                    {categoryDisplay}
                                   </span>
-                                )}
-                              </span>
-                              <span className={sharedStyles.eventTime}>（{timeDisplay}）</span>
-                            </div>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  )}
-                </div>
-              );
-            })}
+                                  {event.title && (
+                                    <span
+                                      className={sharedStyles.eventTitle}
+                                      title={event.title}
+                                    >
+                                      {event.title}
+                                    </span>
+                                  )}
+                                </span>
+                                <span className={sharedStyles.eventTime}>（{timeDisplay}）</span>
+                              </div>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
       )}
 
       {/* 日にち未定の予定セクション */}
@@ -586,11 +586,11 @@ export function ScheduleAdminPage() {
                     const timeDisplay = event.end_time ? `${startLabel}-${event.end_time}` : startLabel;
                     const categoryDisplay = event.category || '未分類';
                     return (
-                      <li 
+                      <li
                         key={`${event.id}-${event.title}`}
                         className={sharedStyles.undefinedItem}
                       >
-                        <div 
+                        <div
                           className={`${sharedStyles.undefinedEventChip} ${sharedStyles[`event-${timeCategory}`]}`}
                           onClick={(e) => handleEventClick(event, e)}
                           role="button"
@@ -651,18 +651,29 @@ export function ScheduleAdminPage() {
                   required
                 />
               </div>
-
               <div className={styles.formGroup}>
                 <label className={styles.formLabel}>日付</label>
-                <input
-                  type="date"
-                  name="play_date"
-                  value={formData.play_date}
-                  onChange={handleFormChange}
-                  className={styles.formInput}
-                />
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <input
+                    type="date"
+                    name="play_date"
+                    value={formData.play_date}
+                    onChange={handleFormChange}
+                    className={styles.formInput}
+                  />
+                  {formData.play_date && (
+                    <button
+                      type="button"
+                      onClick={() => setFormData(prev => ({ ...prev, play_date: "" }))}
+                      className={styles.clearDateButton}
+                      aria-label="日付をクリア"
+                      style={{ marginLeft: 8 }}
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
               </div>
-
               <div className={styles.formRow}>
                 <div className={styles.formGroup}>
                   <label className={styles.formLabel}>開始時刻</label>
@@ -715,7 +726,7 @@ export function ScheduleAdminPage() {
                     disabled={!formData.type}
                   >
                     <option value="">選択してください</option>
-                    {formData.type && CATEGORY_OPTIONS[formData.type] && 
+                    {formData.type && CATEGORY_OPTIONS[formData.type] &&
                       CATEGORY_OPTIONS[formData.type].map(cat => (
                         <option key={cat} value={cat}>{cat}</option>
                       ))
@@ -756,23 +767,23 @@ export function ScheduleAdminPage() {
 
               <div className={styles.modalActions}>
                 {editingEvent && (
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     className={styles.deleteButton}
                     onClick={handleDelete}
                   >
                     削除
                   </button>
                 )}
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className={styles.cancelButton}
                   onClick={handleCloseEditModal}
                 >
                   キャンセル
                 </button>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className={styles.saveButton}
                   onClick={handleSave}
                 >

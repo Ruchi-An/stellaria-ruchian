@@ -250,10 +250,10 @@ export function ScenarioAdminPage() {
       category: gmForm.category || null,
       production: gmForm.production || null,
       creator: gmForm.creator || null,
-      recommended_players: gmForm.recommendedPlayers || null,
-      play_time: gmForm.playTime || null,
-      gm_play_count: gmForm.gmPlayCount ? Number(gmForm.gmPlayCount) : null,
-      scenario_url: gmForm.scenarioUrl || null,
+      recommendedPlayers: gmForm.recommendedPlayers || null,
+      playTime: gmForm.playTime || null,
+      gmPlayCount: gmForm.gmPlayCount ? Number(gmForm.gmPlayCount) : null,
+      scenarioUrl: gmForm.scenarioUrl || null,
       notes: gmForm.notes || null,
     };
     try {
@@ -571,6 +571,16 @@ export function ScenarioAdminPage() {
             <form className={styles.form} onSubmit={handleSubmit}>
               <div className={styles.formGrid}>
                 <label className={styles.field}>
+                  <span>タイトル</span>
+                  <input
+                    name="title"
+                    value={form.title}
+                    onChange={handleInput}
+                    placeholder="シナリオ名"
+                    required
+                  />
+                </label>
+                <label className={styles.field}>
                   <span>通過日</span>
                   <input
                     name="playDate"
@@ -625,13 +635,13 @@ export function ScenarioAdminPage() {
                   />
                 </label>
                 <label className={styles.field}>
-                  <span>タイトル</span>
-                  <input
-                    name="title"
-                    value={form.title}
+                  <span>メンバー（カンマ区切り）</span>
+                  <textarea
+                    name="membersText"
+                    value={form.membersText}
                     onChange={handleInput}
-                    placeholder="シナリオ名"
-                    required
+                    placeholder="名前1, 名前2"
+                    rows={2}
                   />
                 </label>
                 <label className={styles.field}>
@@ -650,16 +660,6 @@ export function ScenarioAdminPage() {
                     value={form.streamUrl}
                     onChange={handleInput}
                     placeholder="https://..."
-                  />
-                </label>
-                <label className={styles.field}>
-                  <span>メンバー（カンマ区切り）</span>
-                  <textarea
-                    name="membersText"
-                    value={form.membersText}
-                    onChange={handleInput}
-                    placeholder="名前1, 名前2"
-                    rows={2}
                   />
                 </label>
                 <label className={styles.field}>
