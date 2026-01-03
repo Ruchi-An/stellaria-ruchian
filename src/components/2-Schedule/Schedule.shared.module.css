@@ -335,9 +335,7 @@
 .dateNumber {
   display: inline-block;
   font-weight: 700;
-  font-size: clamp(0.5rem, 2vw, 1.2rem);
-  padding: 0 !important;
-  margin: 0 !important;
+  font-size: clamp(0.7rem, 2vw, 1.2rem);
   line-height: 1;
 }
 
@@ -455,7 +453,7 @@
 
 .eventChip {
   padding: clamp(5px, 0.8vw, 9px) clamp(6px, 1vw, 9px);
-  border-radius: 12px;
+  border-radius: 8px;
   background: linear-gradient(135deg, rgba(142, 200, 255, 0.35), rgba(255, 226, 140, 0.25));
   border: 1px solid rgba(255, 255, 255, 0.18);
   color: #ffffff;
@@ -517,30 +515,35 @@
   background: linear-gradient(135deg, rgba(100, 255, 100, 0.25), rgba(100, 255, 100, 0.15));
   border: 2px solid rgb(100, 255, 100);
   box-shadow: 0 0 12px rgba(100, 255, 100, 0.5), 0 4px 14px rgba(0, 0, 0, 0.2);
+  border-left: 10px solid rgb(100, 255, 100);
 }
 
 .event-afternoon {
   background: linear-gradient(135deg, rgba(255, 165, 0, 0.25), rgba(255, 165, 0, 0.15));
   border: 2px solid rgb(255, 165, 0);
   box-shadow: 0 0 12px rgba(255, 165, 0, 0.5), 0 4px 14px rgba(0, 0, 0, 0.2);
+  border-left: 10px solid rgb(255, 165, 0);
 }
 
 .event-evening {
   background: linear-gradient(135deg, rgba(100, 180, 255, 0.25), rgba(100, 180, 255, 0.15));
   border: 2px solid rgb(100, 180, 255);
   box-shadow: 0 0 12px rgba(100, 180, 255, 0.5), 0 4px 14px rgba(0, 0, 0, 0.2);
+  border-left: 10px solid rgb(100, 180, 255);
 }
 
 .event-late-night {
   background: linear-gradient(135deg, rgba(180, 100, 255, 0.25), rgba(180, 100, 255, 0.15));
   border: 2px solid rgb(180, 100, 255);
   box-shadow: 0 0 12px rgba(180, 100, 255, 0.5), 0 4px 14px rgba(0, 0, 0, 0.2);
+  border-left: 10px solid rgb(180, 100, 255);
 }
 
 .event-undefined {
   background: linear-gradient(135deg, rgba(200, 200, 200, 0.25), rgba(200, 200, 200, 0.15));
   border: 2px solid rgb(200, 200, 200);
   box-shadow: 0 0 12px rgba(200, 200, 200, 0.3), 0 4px 14px rgba(0, 0, 0, 0.2);
+  border-left: 10px solid rgb(200, 200, 200);
 }
 
 /* ====================================
@@ -641,9 +644,10 @@
 .undefinedEventChip {
   display: block;
   padding: 14px 16px;
-  border-radius: 12px;
+  border-radius: 8px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.15);
+  border-left: 4px solid rgba(255, 255, 255, 0.4);
   cursor: pointer;
   transition: all 0.2s ease;
   text-decoration: none;
