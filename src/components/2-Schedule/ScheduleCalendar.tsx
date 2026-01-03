@@ -11,6 +11,7 @@ export type CalendarCell = {
   weekday?: number;
   isWeekend?: boolean;
   isHoliday?: boolean;
+  badgeTypes?: Array<'stream-off' | 'work-off' | 'tentative'>;
 };
 
 const weekdayLabels = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
@@ -33,9 +34,27 @@ interface ScheduleCalendarProps {
   todayKey: string;
   eventsByDate: Record<string, Event[]>;
   onEventClick: (event: Event) => void;
+  streamOffDays?: Set<string>;
+  workOffDays?: Set<string>;
+  tentativeDays?: Set<string>;
+  onCellClick?: (dateKey: string) => void;
+  onCellRightClick?: (dateKey: string, e: React.MouseEvent) => void;
+  isClickable?: boolean;
 }
 
-export function ScheduleCalendar({ year, monthIndex, todayKey, eventsByDate, onEventClick }: ScheduleCalendarProps) {
+export function ScheduleCalendar({ 
+  year, 
+  monthIndex, 
+  todayKey, 
+  eventsByDate, 
+  onEventClick,
+  streamOffDays = new Set(),
+  workOffDays = new Set(),
+  tentativeDays = new Set(),
+  onCellClick,
+  onCellRightClick,
+  isClickable = false,
+}: ScheduleCalendarProps) {
   const holidays = new Holidays('JP');
   const firstDayOfMonth = new Date(year, monthIndex, 1).getDay();
   const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
@@ -57,6 +76,12 @@ export function ScheduleCalendar({ year, monthIndex, todayKey, eventsByDate, onE
     const weekday = dateObj.getDay();
     const isWeekend = weekday === 0 || weekday === 6;
     const isHoliday = Boolean(holidays.isHoliday(dateObj));
+    
+    const badgeTypes: Array<'stream-off' | 'work-off' | 'tentative'> = [];
+    if (streamOffDays.has(dateKey)) badgeTypes.push('stream-off');
+    if (workOffDays.has(dateKey)) badgeTypes.push('work-off');
+    if (tentativeDays.has(dateKey)) badgeTypes.push('tentative');
+    
     return {
       key: dateKey,
       label: String(dateNumber),
@@ -66,6 +91,7 @@ export function ScheduleCalendar({ year, monthIndex, todayKey, eventsByDate, onE
       weekday,
       isWeekend,
       isHoliday,
+      badgeTypes,
     };
   });
 
@@ -82,19 +108,49 @@ export function ScheduleCalendar({ year, monthIndex, todayKey, eventsByDate, onE
           if (cell.isToday) classNames.push(sharedStyles.today);
           if (cell.events.length > 0) classNames.push(sharedStyles.hasEvent);
           if (cell.isEmpty) classNames.push(sharedStyles.empty);
+          if (cell.badgeTypes?.includes('stream-off')) classNames.push(sharedStyles.streamOffDay);
+          
+          const badgeInfo = {
+            'stream-off': { icon: '✕', label: '配信休み' },
+            'work-off': { icon: '○', label: '仕事休み' },
+            'tentative': { icon: '?', label: '予定未定' },
+          };
+          
           return (
-            <div key={cell.key} className={classNames.join(" ")}>
-              {(() => {
-                const dateClasses = [sharedStyles.dateNumber];
-                if (cell.isHoliday) {
-                  dateClasses.push(sharedStyles.holidayDate);
-                } else if (cell.weekday === 0) {
-                  dateClasses.push(sharedStyles.sundayDate);
-                } else if (cell.weekday === 6) {
-                  dateClasses.push(sharedStyles.saturdayDate);
-                }
-                return <span className={dateClasses.join(' ')}>{cell.label}</span>;
-              })()}
+            <div 
+              key={cell.key} 
+              className={classNames.join(" ")}
+              onClick={() => !cell.isEmpty && onCellClick && onCellClick(cell.key)}
+              onContextMenu={(e) => !cell.isEmpty && onCellRightClick && onCellRightClick(cell.key, e)}
+              title={isClickable ? "右クリックでバッジを追加/削除" : undefined}
+              style={isClickable && !cell.isEmpty ? { cursor: 'pointer' } : undefined}
+            >
+              <div className={sharedStyles.dateRow}>
+                {(() => {
+                  const dateClasses = [sharedStyles.dateNumber];
+                  if (cell.isHoliday) {
+                    dateClasses.push(sharedStyles.holidayDate);
+                  } else if (cell.weekday === 0) {
+                    dateClasses.push(sharedStyles.sundayDate);
+                  } else if (cell.weekday === 6) {
+                    dateClasses.push(sharedStyles.saturdayDate);
+                  }
+                  return <span className={dateClasses.join(' ')}>{cell.label}</span>;
+                })()}
+                {cell.badgeTypes && cell.badgeTypes.length > 0 && (
+                  <div className={sharedStyles.badgeContainer}>
+                    {cell.badgeTypes.map((badgeType) => (
+                      <span 
+                        key={badgeType}
+                        className={`${sharedStyles.badgeMarker} ${sharedStyles[`badge-${badgeType}`]}`}
+                        title={badgeInfo[badgeType].label}
+                      >
+                        {badgeInfo[badgeType].icon}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
               {cell.events.length > 0 && (
                 <ul className={sharedStyles.eventList}>
                   {cell.events.map((event) => {
@@ -106,7 +162,10 @@ export function ScheduleCalendar({ year, monthIndex, todayKey, eventsByDate, onE
                       <li
                         key={`${event.id}-${event.title}`}
                         className={`${sharedStyles.eventChip} ${sharedStyles[`event-${timeCategory}`]}`}
-                        onClick={() => onEventClick(event)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onEventClick(event);
+                        }}
                         role="button"
                         tabIndex={0}
                         onKeyPress={(e) => {

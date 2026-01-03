@@ -27,6 +27,41 @@ export function SchedulePage() {
   // 今日の日付キー（YYYY-MM-DD）
   const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
+  // ローカルバッジを読み込み（localStorageから）
+  const [localBadges, setLocalBadges] = useState<Record<string, Set<'stream-off' | 'work-off' | 'tentative'>>>(() => {
+    const saved = localStorage.getItem('scheduleBadges');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved) as Record<string, string[]>;
+        const result: Record<string, Set<'stream-off' | 'work-off' | 'tentative'>> = {};
+        for (const [key, value] of Object.entries(parsed)) {
+          result[key] = new Set(value as Array<'stream-off' | 'work-off' | 'tentative'>);
+        }
+        return result;
+      } catch (e) {
+        console.error('Failed to parse badges from localStorage:', e);
+      }
+    }
+    return {};
+  });
+
+  // 配信不可日のセット（高速な検索のため）
+  const streamOffDays = new Set(
+    Object.entries(localBadges)
+      .filter(([_, badges]) => badges.has('stream-off'))
+      .map(([date]) => date)
+  );
+  const workOffDays = new Set(
+    Object.entries(localBadges)
+      .filter(([_, badges]) => badges.has('work-off'))
+      .map(([date]) => date)
+  );
+  const tentativeDays = new Set(
+    Object.entries(localBadges)
+      .filter(([_, badges]) => badges.has('tentative'))
+      .map(([date]) => date)
+  );
+
   // スケジュールデータを日付ごとにグループ化、未定リスト分離
   const eventsByDate: Record<string, Event[]> = {};
   const undefinedSchedules: Event[] = [];
@@ -150,6 +185,26 @@ export function SchedulePage() {
                   </div>
                 </div>
               </div>
+              <div className={sharedStyles.legendContainer} style={{ marginTop: '8px' }}>
+                <div className={sharedStyles.legend}>
+                  <div className={sharedStyles.legendItem}>
+                    <span className={`${sharedStyles.badgeMarker} ${sharedStyles['badge-stream-off']}`} style={{ fontSize: '0.7rem', padding: '1px 3px' }}>✕</span>
+                    <span className={sharedStyles.legendText}>配信休み</span>
+                  </div>
+                </div>
+                <div className={sharedStyles.legend}>
+                  <div className={sharedStyles.legendItem}>
+                    <span className={`${sharedStyles.badgeMarker} ${sharedStyles['badge-work-off']}`} style={{ fontSize: '0.7rem', padding: '1px 3px' }}>○</span>
+                    <span className={sharedStyles.legendText}>仕事休み</span>
+                  </div>
+                </div>
+                <div className={sharedStyles.legend}>
+                  <div className={sharedStyles.legendItem}>
+                    <span className={`${sharedStyles.badgeMarker} ${sharedStyles['badge-tentative']}`} style={{ fontSize: '0.7rem', padding: '1px 3px' }}>?</span>
+                    <span className={sharedStyles.legendText}>予定入るかも</span>
+                  </div>
+                </div>
+              </div>
               <div className={sharedStyles.dateNavigationContainer}>
                 <button
                   className={sharedStyles.navButton}
@@ -198,6 +253,9 @@ export function SchedulePage() {
               todayKey={todayKey}
               eventsByDate={eventsByDate}
               onEventClick={handleEventClick}
+              streamOffDays={streamOffDays}
+              workOffDays={workOffDays}
+              tentativeDays={tentativeDays}
             />
           </div>
         </section>

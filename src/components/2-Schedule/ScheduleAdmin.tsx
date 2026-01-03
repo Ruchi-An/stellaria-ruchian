@@ -3,6 +3,7 @@ import Holidays from "date-holidays";
 import sharedStyles from "./Schedule.shared.module.css";
 import styles from "./ScheduleAdmin.module.css";
 import { supabase } from "../../lib/supabaseClient";
+import { ScheduleCalendar } from "./ScheduleCalendar";
 
 type CalendarCell = {
   label: string;
@@ -13,6 +14,7 @@ type CalendarCell = {
   weekday?: number;
   isWeekend?: boolean;
   isHoliday?: boolean;
+  badgeTypes?: Array<'stream-off' | 'work-off' | 'tentative'>;
 };
 
 type Event = {
@@ -42,12 +44,15 @@ type ScheduleData = {
 const weekdayLabels = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
 // タイプとカテゴリの定義
-const TYPE_OPTIONS = ["🎮", "📚", "🌏"];
+const TYPE_OPTIONS = ["🎮", "📚", "🌏", "配信休み", "仕事休み", "予定未定"];
 
 const CATEGORY_OPTIONS: Record<string, string[]> = {
   "🎮": ["🤪", "🚀", "🍎", "🐺", "🔍", "🪿", "🫖", "🚙", "🛸", "⛄", "👻", "💳", "👤"],
   "📚": ["📕", "📗", "📘", "📙"],
   "🌏": ["🌏"],
+  "配信休み": [],
+  "仕事休み": [],
+  "予定未定": [],
 };
 
 function getTimeCategory(timeStr: string | null): string {
@@ -82,6 +87,32 @@ export function ScheduleAdminPage() {
   const [gameNames, setGameNames] = useState<string[]>([]);
   // 日にち未定セクションの開閉状態
   const [isUndefinedSchedulesOpen, setIsUndefinedSchedulesOpen] = useState(true);
+  // ローカルバッジ管理（localStorageに永続化）
+  const [localBadges, setLocalBadges] = useState<Record<string, Set<'stream-off' | 'work-off' | 'tentative'>>>(() => {
+    const saved = localStorage.getItem('scheduleBadges');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved) as Record<string, string[]>;
+        const result: Record<string, Set<'stream-off' | 'work-off' | 'tentative'>> = {};
+        for (const [key, value] of Object.entries(parsed)) {
+          result[key] = new Set(value as Array<'stream-off' | 'work-off' | 'tentative'>);
+        }
+        return result;
+      } catch (e) {
+        console.error('Failed to parse badges from localStorage:', e);
+      }
+    }
+    return {};
+  });
+  
+  // localBadgesをlocalStorageに保存
+  useEffect(() => {
+    const toSave: Record<string, string[]> = {};
+    for (const [key, value] of Object.entries(localBadges)) {
+      toSave[key] = Array.from(value);
+    }
+    localStorage.setItem('scheduleBadges', JSON.stringify(toSave));
+  }, [localBadges]);
   // 日本の祝日判定インスタンス
   const holidays = new Holidays('JP');
 
@@ -189,6 +220,10 @@ export function ScheduleAdminPage() {
     const weekday = dateObj.getDay();
     const isWeekend = weekday === 0 || weekday === 6;
     const isHoliday = Boolean(holidays.isHoliday(dateObj));
+    
+    // ローカルバッジを配列に変換
+    const badgeTypes: Array<'stream-off' | 'work-off' | 'tentative'> = 
+      Array.from(localBadges[dateKey] ?? new Set());
 
     return {
       key: dateKey,
@@ -199,6 +234,7 @@ export function ScheduleAdminPage() {
       weekday,
       isWeekend,
       isHoliday,
+      badgeTypes,
     };
   });
 
@@ -255,6 +291,51 @@ export function ScheduleAdminPage() {
     setIsEditModalOpen(true);
   };
 
+  // 日付セルを右クリック（バッジのトグル）
+  const handleCellRightClick = (dateKey: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    
+    // バッジタイプを選択
+    const choice = prompt('バッジタイプを選択してください：\n1: 配信休み (✕)\n2: 仕事休み (○)\n3: 予定未定 (?)');
+    
+    if (!choice) return;
+    
+    const typeMap: Record<string, 'stream-off' | 'work-off' | 'tentative'> = {
+      '1': 'stream-off',
+      '2': 'work-off',
+      '3': 'tentative',
+    };
+    
+    const selectedType = typeMap[choice];
+    if (!selectedType) {
+      alert('無効な選択です');
+      return;
+    }
+    
+    // ローカルバッジを更新
+    setLocalBadges(prev => {
+      const newBadges = { ...prev };
+      if (!newBadges[dateKey]) {
+        newBadges[dateKey] = new Set();
+      } else {
+        // 既存のSetをコピーしないと、元のオブジェクトが変更されてしまう
+        newBadges[dateKey] = new Set(newBadges[dateKey]);
+      }
+      
+      // トグル：あれば削除、なければ追加
+      if (newBadges[dateKey].has(selectedType)) {
+        newBadges[dateKey].delete(selectedType);
+        if (newBadges[dateKey].size === 0) {
+          delete newBadges[dateKey];
+        }
+      } else {
+        newBadges[dateKey].add(selectedType);
+      }
+      
+      return newBadges;
+    });
+  };
+
   // 新規作成ボタンをクリック
   const handleCreateNew = () => {
     const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
@@ -274,8 +355,7 @@ export function ScheduleAdminPage() {
   };
 
   // 既存イベントをクリック（編集）
-  const handleEventClick = (event: Event, e: React.MouseEvent) => {
-    e.stopPropagation(); // 日付セルのクリックイベントを防ぐ
+  const handleEventClick = (event: Event) => {
     setEditingEvent(event);
     setSelectedDate(event.play_date);
     setFormData({
@@ -443,6 +523,26 @@ export function ScheduleAdminPage() {
                   </div>
                 </div>
               </div>
+              <div className={sharedStyles.legendContainer} style={{ marginTop: '8px' }}>
+                <div className={sharedStyles.legend}>
+                  <div className={sharedStyles.legendItem}>
+                    <span className={`${sharedStyles.badgeMarker} ${sharedStyles['badge-stream-off']}`} style={{ fontSize: '0.7rem', padding: '1px 3px' }}>✕</span>
+                    <span className={sharedStyles.legendText}>配信休み</span>
+                  </div>
+                </div>
+                <div className={sharedStyles.legend}>
+                  <div className={sharedStyles.legendItem}>
+                    <span className={`${sharedStyles.badgeMarker} ${sharedStyles['badge-work-off']}`} style={{ fontSize: '0.7rem', padding: '1px 3px' }}>○</span>
+                    <span className={sharedStyles.legendText}>仕事休み</span>
+                  </div>
+                </div>
+                <div className={sharedStyles.legend}>
+                  <div className={sharedStyles.legendItem}>
+                    <span className={`${sharedStyles.badgeMarker} ${sharedStyles['badge-tentative']}`} style={{ fontSize: '0.7rem', padding: '1px 3px' }}>?</span>
+                    <span className={sharedStyles.legendText}>予定未定</span>
+                  </div>
+                </div>
+              </div>
               <div className={sharedStyles.dateNavigationContainer}>
                 <button
                   className={sharedStyles.navButton}
@@ -485,87 +585,19 @@ export function ScheduleAdminPage() {
               </div>
             </header>
 
-            <div className={sharedStyles.weekRow}>
-              {weekdayLabels.map((day) => (
-                <span key={day} className={sharedStyles.weekLabel}>
-                  {day}
-                </span>
-              ))}
-            </div>
-
-            <div className={sharedStyles.calendarGrid}>
-              {calendarCells.map((cell) => {
-                const classNames = [sharedStyles.dayCell];
-                if (cell.isToday) classNames.push(sharedStyles.today);
-                if (cell.events.length > 0) classNames.push(sharedStyles.hasEvent);
-                if (cell.isEmpty) classNames.push(sharedStyles.empty);
-                if (!cell.isEmpty) classNames.push(styles.clickable);
-
-                return (
-                  <div
-                    key={cell.key}
-                    className={classNames.join(" ")}
-                    onClick={() => !cell.isEmpty && handleCellClick(cell.key)}
-                  >
-                    {(() => {
-                      const dateClasses = [sharedStyles.dateNumber];
-                      if (cell.isHoliday) {
-                        dateClasses.push(sharedStyles.holidayDate);
-                      } else if (cell.weekday === 0) {
-                        dateClasses.push(sharedStyles.sundayDate);
-                      } else if (cell.weekday === 6) {
-                        dateClasses.push(sharedStyles.saturdayDate);
-                      }
-                      return <span className={dateClasses.join(' ')}>{cell.label}</span>;
-                    })()}
-                    {cell.events.length > 0 && (
-                      <ul className={sharedStyles.eventList}>
-                        {cell.events.map((event) => {
-                          const timeCategory = getTimeCategory(event.start_time);
-                          const startLabel = event.start_time || "未定";
-                          const timeDisplay = event.end_time ? `${startLabel}-${event.end_time}` : startLabel;
-                          const categoryDisplay = event.category || "未分類";
-                          return (
-                            <li
-                              key={`${event.id}-${event.title}`}
-                              className={`${sharedStyles.eventChip} ${sharedStyles[`event-${timeCategory}`]}`}
-                              onClick={(e) => handleEventClick(event, e)}
-                              role="button"
-                              tabIndex={0}
-                              onKeyPress={(e) => {
-                                if (e.key === 'Enter' || e.key === ' ') {
-                                  handleEventClick(event, e as unknown as React.MouseEvent);
-                                }
-                              }}
-                            >
-                              <div className={sharedStyles.eventText}>
-                                <span className={sharedStyles.eventTitleRow}>
-                                  <span
-                                    className={sharedStyles.eventCategory}
-                                    title={categoryDisplay}
-                                  >
-                                    {categoryDisplay}
-                                  </span>
-                                  {event.title && (
-                                    <span
-                                      className={sharedStyles.eventTitle}
-                                      title={event.title}
-                                    >
-                                      {event.title}
-                                    </span>
-                                  )}
-                                </span>
-                                <span className={sharedStyles.eventTime}>（{timeDisplay}）</span>
-                              </div>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+            <ScheduleCalendar
+              year={year}
+              monthIndex={monthIndex}
+              todayKey={todayKey}
+              eventsByDate={eventsByDate}
+              onEventClick={handleEventClick}
+              streamOffDays={new Set(Object.entries(localBadges).filter(([_, badges]) => badges.has('stream-off')).map(([date]) => date))}
+              workOffDays={new Set(Object.entries(localBadges).filter(([_, badges]) => badges.has('work-off')).map(([date]) => date))}
+              tentativeDays={new Set(Object.entries(localBadges).filter(([_, badges]) => badges.has('tentative')).map(([date]) => date))}
+              onCellClick={handleCellClick}
+              onCellRightClick={handleCellRightClick}
+              isClickable={true}
+            />
           </div>
         </section>
       )}
@@ -602,12 +634,12 @@ export function ScheduleAdminPage() {
                       >
                         <div
                           className={`${sharedStyles.undefinedEventChip} ${sharedStyles[`event-${timeCategory}`]}`}
-                          onClick={(e) => handleEventClick(event, e)}
+                          onClick={() => handleEventClick(event)}
                           role="button"
                           tabIndex={0}
                           onKeyPress={(e) => {
                             if (e.key === 'Enter' || e.key === ' ') {
-                              handleEventClick(event, e as unknown as React.MouseEvent);
+                              handleEventClick(event);
                             }
                           }}
                         >
