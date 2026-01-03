@@ -122,10 +122,458 @@
     transform: translateY(40px) scale(0.98);
   }
   100% {
-  vertical-align: middle;
-  line-height: 1.6;
-  text-align: center;
     opacity: 1;
     transform: translateY(0) scale(1);
   }
+}
+
+/* Section共通スタイル */
+.sectionDescription {
+  text-align: center;
+  font-size: clamp(0.1rem, 2.5vw, 1.1rem);
+  opacity: 0.85;
+  margin-top: 8px;
+}
+
+.sectionLabelRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: clamp(0.1rem, 5vw, 2.2rem);
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  margin: 0 0 20px;
+  text-shadow:
+    0 0 10px rgba(150, 200, 255, 0.55),
+    0 0 20px rgba(100, 180, 255, 0.45),
+    0 0 30px rgba(120, 200, 255, 0.35);
+}
+
+.sectionLabelText {
+  opacity: 0.93;
+}
+
+.sectionLabelIcon {
+  color: var(--star-yellow, #ffd34d);
+  text-shadow: 0 0 8px rgba(250, 244, 127, 0.55);
+  font-size: clamp(0.1rem, 4vw, 1.3rem);
+}
+
+.sectionButtonRow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+@media (max-width: 960px) {
+  .sectionButtonRow {
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+  .sectionButtonRow .detailButton {
+    margin-left: 0 !important;
+    width: 100%;
+    max-width: 260px;
+    text-align: center;
+  }
+}
+
+/* ===============================
+   共通ページレイアウト
+   =============================== */
+.commonPage {
+  min-height: 100vh;
+  color: var(--text-primary);
+  padding: 0 var(--spacing-sm) 96px;
+  background: transparent;
+}
+
+.commonHero {
+  min-height: auto;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  gap: var(--spacing-sm);
+  padding-top: 120px;
+  padding-bottom: var(--spacing-xl);
+}
+
+.commonTitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  font-size: 2.2rem;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+}
+
+.commonTitle {
+  margin: 0;
+  font-size: clamp(1.5rem, 5vw, 4.0rem);
+  opacity: 0.95;
+  letter-spacing: 0.12em;
+  text-shadow:
+    0 0 10px var(--color-primary-light),
+    0 0 20px var(--color-primary-dark),
+    0 0 30px var(--color-primary);
+}
+
+.commonTitleIcon {
+  color: var(--color-accent);
+  text-shadow: 0 0 10px var(--color-accent-glow);
+  font-size: clamp(1.4rem, 4vw, 1.8rem);
+}
+
+.commonSubtitle {
+  margin: 0;
+  max-width: 640px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  letter-spacing: 0.04em;
+}
+
+/* ===============================
+   共通コンテナ・カード
+   =============================== */
+.commonContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-sm);
+}
+
+.commonCard {
+  background: var(--glass-bg);
+  border: 2px solid var(--glass-border);
+  border-radius: var(--radius-large);
+  box-shadow:
+    var(--shadow-large),
+    var(--shadow-medium),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 60px rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  padding: clamp(16px, 3vw, 32px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.commonCard:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 16px 50px rgba(0, 0, 0, 0.35),
+    0 6px 20px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.12);
+}
+
+/* ===============================
+   共通タブUI
+   =============================== */
+.commonTabs {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0;
+}
+
+.commonTab {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: var(--spacing-sm) var(--spacing-md);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+  letter-spacing: 0.05em;
+}
+
+.commonTab:hover {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.commonTab.active {
+  color: var(--text-primary);
+}
+
+.commonTab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    var(--color-accent),
+    var(--color-primary)
+  );
+  box-shadow: var(--shadow-glow);
+}
+
+@media (max-width: 640px) {
+  .commonTabs {
+    gap: var(--spacing-xs);
+  }
+  .commonTab {
+    font-size: 0.95rem;
+    padding: 10px var(--spacing-sm);
+  }
+}
+
+/* ===============================
+   共通モーダル
+   =============================== */
+.commonModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(ellipse at center, 
+    rgba(20, 40, 80, 0.5), 
+    rgba(5, 15, 40, 0.65));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.commonModalContent {
+  background: linear-gradient(135deg, 
+    rgba(200, 230, 255, 0.18) 0%,
+    rgba(220, 240, 255, 0.15) 50%,
+    rgba(180, 220, 255, 0.18) 100%);
+  border: 2px solid var(--glass-border-strong);
+  border-radius: var(--radius-large);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.6),
+    inset 0 -1px 2px rgba(150, 200, 255, 0.3);
+  backdrop-filter: blur(25px) saturate(180%);
+  -webkit-backdrop-filter: blur(25px) saturate(180%);
+  padding: clamp(24px, 5vw, 36px);
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.commonModalCloseButton {
+  position: absolute;
+  top: var(--spacing-sm);
+  right: var(--spacing-sm);
+  background: rgba(180, 220, 255, 0.2);
+  border: 1px solid var(--glass-border-strong);
+  border-radius: var(--radius-small);
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.commonModalCloseButton:hover {
+  background: rgba(180, 220, 255, 0.35);
+  border-color: var(--color-primary);
+  transform: scale(1.1) rotate(90deg);
+}
+
+.commonModalCloseButton:active {
+  transform: scale(0.95);
+}
+
+/* ===============================
+   管理者画面用共通スタイル
+   =============================== */
+.adminSubtitle {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.75);
+  letter-spacing: 0.04em;
+  font-size: 1rem;
+}
+
+.adminPanel {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-large);
+  padding: var(--spacing-md) clamp(16px, 3vw, 28px);
+  box-shadow:
+    var(--shadow-large),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  margin-bottom: var(--spacing-md);
+}
+
+.adminPanelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  margin-bottom: var(--spacing-sm);
+}
+
+.adminPanelTitle {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-primary);
+}
+
+/* 管理者用フォーム */
+.adminFormGroup {
+  margin-bottom: var(--spacing-sm);
+}
+
+.adminFormLabel {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.adminFormInput,
+.adminFormTextarea,
+.adminFormSelect {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-small);
+  padding: 10px 14px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.adminFormInput:focus,
+.adminFormTextarea:focus,
+.adminFormSelect:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(150, 200, 255, 0.2);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.adminFormTextarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* 管理者用ボタン */
+.adminButton {
+  background: linear-gradient(135deg, rgba(200, 220, 255, 0.3), rgba(180, 210, 255, 0.2));
+  border: 2px solid rgba(220, 235, 255, 0.5);
+  border-radius: var(--radius-small);
+  color: var(--text-primary);
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(12px);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.adminButton:hover {
+  background: linear-gradient(135deg, rgba(200, 220, 255, 0.4), rgba(180, 210, 255, 0.3));
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-small);
+}
+
+.adminButtonPrimary {
+  background: linear-gradient(90deg, var(--color-accent) 0%, var(--color-primary) 100%);
+  border-color: var(--color-accent);
+  color: #222;
+}
+
+.adminButtonPrimary:hover {
+  background: linear-gradient(90deg, #ffe9a0 0%, #cbe6ff 100%);
+  box-shadow: var(--shadow-medium);
+}
+
+.adminButtonDanger {
+  background: linear-gradient(135deg, rgba(255, 100, 100, 0.3), rgba(220, 80, 80, 0.2));
+  border-color: rgba(255, 150, 150, 0.5);
+}
+
+.adminButtonDanger:hover {
+  background: linear-gradient(135deg, rgba(255, 100, 100, 0.4), rgba(220, 80, 80, 0.3));
+  border-color: rgba(255, 100, 100, 0.7);
+}
+
+.adminButtonSmall {
+  padding: 6px 12px;
+  font-size: 0.9rem;
+}
+
+/* 管理者用アクションボタン群 */
+.adminActionButtons {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: flex-end;
+  margin-top: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+/* 管理者用メッセージ */
+.adminMessage {
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-small);
+  margin-bottom: var(--spacing-sm);
+  text-align: center;
+  font-weight: 500;
+}
+
+.adminMessageSuccess {
+  background: rgba(100, 255, 150, 0.15);
+  border: 1px solid rgba(100, 255, 150, 0.3);
+  color: #a0ffb0;
+}
+
+.adminMessageError {
+  background: rgba(255, 100, 100, 0.15);
+  border: 1px solid rgba(255, 100, 100, 0.3);
+  color: #ffb0b0;
 }

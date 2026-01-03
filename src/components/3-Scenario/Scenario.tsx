@@ -1,8 +1,9 @@
 
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import type { ScenarioCard as ScenarioCardType, GMScenarioCard } from "../../types/scenario";
+import type { ScenarioCard as ScenarioCardType, GMScenarioCard as GMScenarioCardType } from "../../types/scenario";
 import { ScenarioCard } from "./ScenarioCard";
+import { GMScenarioCard } from "./GMScenarioCard";
 import { supabase } from "../../lib/supabaseClient";
 import styles from "./Scenario.module.css";
 
@@ -10,73 +11,95 @@ type TabType = 'passed' | 'gm-ready';
 
 export function ScenarioPage() {
   const location = useLocation();
+  
+  // URLクエリパラメータから初期タブを取得する関数
   const getInitialTab = (): TabType => {
     const params = new URLSearchParams(location.search);
     const tab = params.get('tab');
     if (tab === 'gm-ready') return 'gm-ready';
     return 'passed';
   };
+  
+  // 現在表示中のタブ（'passed': 通過済み, 'gm-ready': GM可能）
   const [activeTab, setActiveTab] = useState<TabType>(getInitialTab());
 
-  // クエリパラメータが変わったらタブも切り替え
+  // URLクエリパラメータが変わったらタブも切り替え
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const tab = params.get('tab');
     if (tab === 'gm-ready') setActiveTab('gm-ready');
     else setActiveTab('passed');
   }, [location.search]);
-  const [cards, setCards] = useState<ScenarioCardType[]>([]);
-  const [gmCards, setGmCards] = useState<GMScenarioCard[]>([]);
-  const [loading, setLoading] = useState(true);
-  // フィルター用ステート
-  const [categoryFilter, setCategoryFilter] = useState<string>('');
-  const [gmFilter, setGmFilter] = useState<string>('');
-  const [plFilter, setPlFilter] = useState<string>('');
-  const [titleSearch, setTitleSearch] = useState<string>('');
-  const [memberSearch, setMemberSearch] = useState<string>('');
-    // 検索・フィルター表示トグル
-  const [showSearch, setShowSearch] = useState(false);
-  const [showFilter, setShowFilter] = useState(false);
+  
+  // 通過済みシナリオのカードリスト
+  const [passedScenarioCards, setPassedScenarioCards] = useState<ScenarioCardType[]>([]);
+  // GM可能シナリオのカードリスト
+  const [gmReadyScenarioCards, setGmReadyScenarioCards] = useState<GMScenarioCardType[]>([]);
+  // データ読み込み中フラグ
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // === 絞り込み用のステート ===
+  // カテゴリによる絞り込み（リストから選択）
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('');
+  // シナリオタイトルのテキスト絞り込み（自由記入）
+  const [titleSearchText, setTitleSearchText] = useState<string>('');
+  // メンバー（GM/ST、プレイヤー問わず）のテキスト絞り込み（自由記入）
+  const [memberSearchText, setMemberSearchText] = useState<string>('');
+  // 絞り込み欄の表示/非表示トグル
+  const [isFilterBoxVisible, setIsFilterBoxVisible] = useState(false);
 
   useEffect(() => {
-    const fetchCards = async () => {
+    // データベースからシナリオカード情報を取得する関数
+    const fetchScenarioCards = async () => {
       try {
-        setLoading(true);
+        setIsLoading(true);
         
         // 通過済みシナリオの取得
-        const { data, error } = await supabase
+        const { data: passedScenarioData, error: passedScenarioError } = await supabase
           .from('tsuka_scenario_list')
           .select('*');
 
-        if (error) throw error;
+        if (passedScenarioError) throw passedScenarioError;
 
-        const rows = Array.isArray(data) ? data : [];
+        const passedScenarioRows = Array.isArray(passedScenarioData) ? passedScenarioData : [];
 
-        // マッピング関数：可能性のある列名を柔軟に対応
-        const mapRow = (row: any, index: number): ScenarioCardType => {
-          const playDate: string = row.play_date || row.pass_date || row.date || row.passed_on || '';
-          const title: string = row.title || row.scenario_title || row.name || 'Untitled';
-          const category: string | undefined = row.category || row.scenario_category || undefined;
-          const production: string | undefined = row.production || row.maker || undefined;
-          const creator: string | undefined = row.creator || row.author || row.created_by || undefined;
-          const gmSt: string | undefined = row.gm_st || row.gm || row.st || undefined;
-          const playerCharacter: string | undefined = row.player_character || row.pc || row.character || undefined;
-          const scenarioUrl: string | undefined = row.scenario_url || row.link || row.scenario_link || undefined;
-          const streamUrl: string | undefined = row.stream_url || row.distribution_link || row.stream_link || undefined;
-          const cardImageUrl: string | undefined = row.card_image_url || row.image_url || undefined;
-          const membersRaw = row.member || row.members || row.members_text || row.member_list || [];
-          const members: string[] = Array.isArray(membersRaw)
-            ? membersRaw
-            : typeof membersRaw === 'string'
-              ? membersRaw
+        // データベースの行をScenarioCardType型に変換する関数
+        // 異なる列名パターンに柔軟に対応
+        const mapDatabaseRowToScenarioCard = (databaseRow: any, scenarioIndex: number): ScenarioCardType => {
+          // プレイ日（通過日）
+          const playDate: string = databaseRow.play_date || databaseRow.pass_date || databaseRow.date || databaseRow.passed_on || '';
+          // シナリオタイトル
+          const title: string = databaseRow.title || databaseRow.scenario_title || databaseRow.name || 'Untitled';
+          // カテゴリ（例：CoC、DX等）
+          const category: string | undefined = databaseRow.category || databaseRow.scenario_category || undefined;
+          // 制作元
+          const production: string | undefined = databaseRow.production || databaseRow.maker || undefined;
+          // シナリオ作者
+          const creator: string | undefined = databaseRow.creator || databaseRow.author || databaseRow.created_by || undefined;
+          // ゲームマスター/ストーリーテラー
+          const gmSt: string | undefined = databaseRow.gm_st || databaseRow.gm || databaseRow.st || undefined;
+          // プレイヤーが使用したキャラクター
+          const playerCharacter: string | undefined = databaseRow.player_character || databaseRow.pc || databaseRow.character || undefined;
+          // シナリオの詳細ページURL
+          const scenarioUrl: string | undefined = databaseRow.scenario_url || databaseRow.link || databaseRow.scenario_link || undefined;
+          // 配信アーカイブURL
+          const streamUrl: string | undefined = databaseRow.stream_url || databaseRow.distribution_link || databaseRow.stream_link || undefined;
+          // カード表示用の画像URL
+          const cardImageUrl: string | undefined = databaseRow.card_image_url || databaseRow.image_url || undefined;
+          // 参加メンバーの生データ（配列または文字列）
+          const membersRawData = databaseRow.member || databaseRow.members || databaseRow.members_text || databaseRow.member_list || [];
+          // 参加メンバーを配列形式に統一
+          const members: string[] = Array.isArray(membersRawData)
+            ? membersRawData
+            : typeof membersRawData === 'string'
+              ? membersRawData
                   .split(/[\,\u3001\uFF0C\/／\n]+/)
-                  .map((m: string) => m.trim())
+                  .map((memberName: string) => memberName.trim())
                   .filter(Boolean)
               : [];
 
-          // 通過数: テーブルに無ければ日付ソート後の連番を利用
-          // 通過日が古い順で連番を振る
-          const passNumber: number = index + 1;
+          // 通過番号（プレイ日が古い順に1から連番）
+          const passNumber: number = scenarioIndex + 1;
 
           return {
             passNumber,
@@ -95,184 +118,154 @@ export function ScenarioPage() {
         };
 
         // 1) 通過日が古い順にソートして連番を採番
-        const sortedAsc = [...rows].sort((a: any, b: any) => {
-          const ad = new Date(a.play_date || a.pass_date || a.date || a.passed_on || 0).getTime();
-          const bd = new Date(b.play_date || b.pass_date || b.date || b.passed_on || 0).getTime();
-          return ad - bd;
+        const scenariosOldestFirst = [...passedScenarioRows].sort((rowA: any, rowB: any) => {
+          const dateA = new Date(rowA.play_date || rowA.pass_date || rowA.date || rowA.passed_on || 0).getTime();
+          const dateB = new Date(rowB.play_date || rowB.pass_date || rowB.date || rowB.passed_on || 0).getTime();
+          return dateA - dateB;
         });
 
-        const numbered = sortedAsc.map(mapRow);
+        // 各シナリオに連番を付けてマッピング
+        const scenariosWithPassNumber = scenariosOldestFirst.map(mapDatabaseRowToScenarioCard);
 
-        // 2) 表示は通過日が新しい順（大きい番号順）
-        const displayCards = [...numbered].sort((a, b) => {
-          const ad = new Date(a.playDate || 0).getTime();
-          const bd = new Date(b.playDate || 0).getTime();
-          return bd - ad;
+        // 2) 表示は通過日が新しい順（大きい番号順）に並べ替え
+        const scenariosNewestFirst = [...scenariosWithPassNumber].sort((cardA, cardB) => {
+          const dateA = new Date(cardA.playDate || 0).getTime();
+          const dateB = new Date(cardB.playDate || 0).getTime();
+          return dateB - dateA;
         });
 
-        setCards(displayCards);
+        setPassedScenarioCards(scenariosNewestFirst);
 
         // GM可能シナリオの取得
-        const { data: gmData, error: gmError } = await supabase
+        const { data: gmScenarioData, error: gmScenarioError } = await supabase
           .from('gm_scenario_list')
           .select('*');
 
-        if (gmError) throw gmError;
+        if (gmScenarioError) throw gmScenarioError;
 
-        const gmRows = Array.isArray(gmData) ? gmData : [];
-        const gmScenarios: GMScenarioCard[] = gmRows.map((row: any) => ({
-          id: row.id,
-          title: row.title || row.scenario_title || 'Untitled',
-          category: row.category || row.scenario_category || undefined,
-          production: row.production || row.maker || undefined,
-          creator: row.creator || row.author || undefined,
-          recommendedPlayers: row.recommended_players || row.player_count || undefined,
-          playTime: row.play_time || row.duration || undefined,
-          scenarioUrl: row.scenario_url || row.link || undefined,
-          notes: row.notes || row.memo || undefined,
+        const gmScenarioRows = Array.isArray(gmScenarioData) ? gmScenarioData : [];
+        // データベースの行をGMScenarioCardType型に変換
+        const gmScenarios: GMScenarioCardType[] = gmScenarioRows.map((databaseRow: any) => ({
+          id: databaseRow.id,
+          title: databaseRow.title || databaseRow.scenario_title || 'Untitled',
+          category: databaseRow.category || databaseRow.scenario_category || undefined,
+          production: databaseRow.production || databaseRow.maker || undefined,
+          creator: databaseRow.creator || databaseRow.author || undefined,
+          plPlayers: databaseRow.pl_players || databaseRow.recommended_players || databaseRow.player_count || undefined,
+          playTime: databaseRow.play_time || databaseRow.duration || undefined,
+          gmPlayCount: databaseRow.gm_play_count || databaseRow.play_count || undefined,
+          scenarioUrl: databaseRow.scenario_url || databaseRow.link || undefined,
+          notes: databaseRow.notes || databaseRow.memo || undefined,
+          cardImageUrl: databaseRow.card_image_url || databaseRow.image_url || undefined,
+          streamOkng: databaseRow.stream_okng ?? undefined,
         }));
 
-        setGmCards(gmScenarios);
-      } catch (e) {
-        console.error('Failed to load scenario cards:', e);
+        setGmReadyScenarioCards(gmScenarios);
+      } catch (error) {
+        console.error('Failed to load scenario cards:', error);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
-    fetchCards();
+    fetchScenarioCards();
   }, []);
 
-  // フィルター適用
-  const filteredCards = cards.filter(card => {
-    // 1段目: 検索
-    const titleMatch = titleSearch ? card.title.toLowerCase().includes(titleSearch.toLowerCase()) : true;
-    const memberSearchMatch = memberSearch ? card.members.some(m => m.toLowerCase().includes(memberSearch.toLowerCase())) : true;
-    // 2段目: selectフィルター
-    const categoryMatch = categoryFilter ? card.category === categoryFilter : true;
-    const gmMatch = gmFilter ? (card.gmSt && card.gmSt.includes(gmFilter)) : true;
-    const plMatch = plFilter ? (card.playerCharacter && card.playerCharacter.includes(plFilter)) : true;
-    return titleMatch && memberSearchMatch && categoryMatch && gmMatch && plMatch;
+  // 絞り込み条件に合致するシナリオのみを抽出
+  const filteredScenarioCards = passedScenarioCards.filter(scenarioCard => {
+    // タイトル絞り込み
+    const isTitleMatched = titleSearchText ? scenarioCard.title.toLowerCase().includes(titleSearchText.toLowerCase()) : true;
+    // メンバー絞り込み（GM/ST、プレイヤー両方を検索対象に含める）
+    const isMemberMatched = memberSearchText ? (
+      scenarioCard.members.some(memberName => memberName.toLowerCase().includes(memberSearchText.toLowerCase())) ||
+      (scenarioCard.gmSt && scenarioCard.gmSt.toLowerCase().includes(memberSearchText.toLowerCase()))
+    ) : true;
+    // カテゴリ絞り込み
+    const isCategoryMatched = selectedCategoryFilter ? scenarioCard.category === selectedCategoryFilter : true;
+    return isTitleMatched && isMemberMatched && isCategoryMatched;
   });
 
-  // カテゴリー・GM・メンバーの選択肢を抽出
-  const categoryOptions = Array.from(new Set(cards.map(card => card.category).filter(Boolean)));
-  const gmOptions = Array.from(new Set(cards.map(card => card.gmSt).filter(Boolean)));
-  const plOptions = Array.from(new Set(cards.map(card => card.playerCharacter).filter(Boolean)));
+  // カテゴリーの選択肢を抽出
+  const availableCategories = Array.from(new Set(passedScenarioCards.map(card => card.category).filter(Boolean)));
 
   return (
-    <main className={styles.page}>
-      <section className={styles.hero}>
-        <div className={styles.titleRow}>
-          <span className={styles.titleIcon}>✦</span>
-          <h1 className={styles.title}>SCENARIO</h1>
-          <span className={styles.titleIcon}>✦</span>
+    <main className="commonPage">
+      <section className="commonHero" style={{ paddingBottom: 0 }}>
+        <div className="commonTitleRow">
+          <span className="commonTitleIcon">✦</span>
+          <h1 className="commonTitle">SCENARIO</h1>
+          <span className="commonTitleIcon">✦</span>
         </div>
       </section>
 
-      <div className={styles.container}>
+      <div className="commonContainer" style={{ paddingBottom: '40px' }}>
         {/* タブUI */}
-        <div className={styles.tabs}>
+        <div className="commonTabs">
           <button 
-            className={`${styles.tab} ${activeTab === 'passed' ? styles.active : ''}`}
+            className={`commonTab ${activeTab === 'passed' ? 'active' : ''}`}
             onClick={() => setActiveTab('passed')}
           >
             通過済みシナリオ
           </button>
           <button 
-            className={`${styles.tab} ${activeTab === 'gm-ready' ? styles.active : ''}`}
+            className={`commonTab ${activeTab === 'gm-ready' ? 'active' : ''}`}
             onClick={() => setActiveTab('gm-ready')}
           >
             GM可能シナリオ
           </button>
         </div>
 
-        {/* フィルターUI: 通過済みタブのみ表示 */}
+        {/* 絞り込みUI: 通過済みタブのみ表示 */}
         {activeTab === 'passed' && (
           <div className={styles.filterLayout}>
-            {/* 左：検索欄 */}
             <div className={styles.filterSide}>
               <button
                 className={styles.filterToggleBtn}
-                onClick={() => setShowSearch(s => !s)}
+                onClick={() => setIsFilterBoxVisible(isVisible => !isVisible)}
               >
-                {showSearch ? '▲ 検索を閉じる' : '▼ 検索'}
+                {isFilterBoxVisible ? '▲ 絞り込みを閉じる' : '▼ 絞り込み'}
               </button>
-              {showSearch && (
+              {isFilterBoxVisible && (
                 <div className={`${styles.filterRow} ${styles.filterColumn}`}>
                   <button
                     className={styles.filterCloseBtn}
-                    aria-label="検索クリア"
-                    onClick={() => { setTitleSearch(''); setMemberSearch(''); }}
-                  >
-                    ×
-                  </button>
-                  <div className={styles.filterRowItem}>
-                    <label htmlFor="search-title">タイトル：</label>
-                    <input
-                      id="search-title"
-                      type="text"
-                      value={titleSearch}
-                      onChange={e => setTitleSearch(e.target.value)}
-                      placeholder="タイトル名"
-                    />
-                  </div>
-                  <div className={styles.filterRowItem}>
-                    <label htmlFor="search-member">人物：</label>
-                    <input
-                      id="search-member"
-                      type="text"
-                      value={memberSearch}
-                      onChange={e => setMemberSearch(e.target.value)}
-                      placeholder="人物名"
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-            {/* 右：フィルター欄 */}
-            <div className={styles.filterSide}>
-              <button
-                className={styles.filterToggleBtn}
-                onClick={() => setShowFilter(s => !s)}
-              >
-                {showFilter ? '▲ フィルターを閉じる' : '▼ フィルター'}
-              </button>
-              {showFilter && (
-                <div className={`${styles.filterRow} ${styles.filterColumn}`}>
-                  <button
-                    className={styles.filterCloseBtn}
-                    aria-label="フィルタークリア"
-                    onClick={() => { setCategoryFilter(''); setGmFilter(''); setPlFilter(''); }}
+                    aria-label="絞り込みクリア"
+                    onClick={() => { 
+                      setSelectedCategoryFilter(''); 
+                      setTitleSearchText(''); 
+                      setMemberSearchText(''); 
+                    }}
                   >
                     ×
                   </button>
                   <div className={styles.filterRowItem}>
                     <label htmlFor="filter-category">カテゴリ：</label>
-                    <select id="filter-category" value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)}>
+                    <select id="filter-category" value={selectedCategoryFilter} onChange={e => setSelectedCategoryFilter(e.target.value)}>
                       <option value="">全て</option>
-                      {categoryOptions.map(opt => (
-                        <option key={opt} value={opt}>{opt}</option>
+                      {availableCategories.map(categoryName => (
+                        <option key={categoryName} value={categoryName}>{categoryName}</option>
                       ))}
                     </select>
                   </div>
                   <div className={styles.filterRowItem}>
-                    <label htmlFor="filter-gm">GM/ST：</label>
-                    <select id="filter-gm" value={gmFilter} onChange={e => setGmFilter(e.target.value)}>
-                      <option value="">全て</option>
-                      {gmOptions.map(opt => (
-                        <option key={opt} value={opt}>{opt}</option>
-                      ))}
-                    </select>
+                    <label htmlFor="filter-title">タイトル：</label>
+                    <input
+                      id="filter-title"
+                      type="text"
+                      value={titleSearchText}
+                      onChange={e => setTitleSearchText(e.target.value)}
+                      placeholder="タイトル名"
+                    />
                   </div>
                   <div className={styles.filterRowItem}>
-                    <label htmlFor="filter-pl">PL：</label>
-                    <select id="filter-pl" value={plFilter} onChange={e => setPlFilter(e.target.value)}>
-                      <option value="">全て</option>
-                      {plOptions.map(opt => (
-                        <option key={opt} value={opt}>{opt}</option>
-                      ))}
-                    </select>
+                    <label htmlFor="filter-member">メンバー：</label>
+                    <input
+                      id="filter-member"
+                      type="text"
+                      value={memberSearchText}
+                      onChange={e => setMemberSearchText(e.target.value)}
+                      placeholder="人物名（GM/ST、メンバー問わず）"
+                    />
                   </div>
                 </div>
               )}
@@ -280,43 +273,28 @@ export function ScenarioPage() {
           </div>
         )}
 
-        {loading ? (
+        {isLoading ? (
           // ローディング表示
           <div className={styles.emptyMessage}>Loading...</div>
         ) : activeTab === 'passed' ? (
-          filteredCards.length === 0 ? (
+          filteredScenarioCards.length === 0 ? (
             // 通過済みシナリオがない場合
             <div className={styles.emptyMessage}>通過済みシナリオはまだありません。</div>
           ) : (
             <div className={styles.cardGrid}>
-              {filteredCards.map((card) => (
-                <ScenarioCard key={card.passNumber} card={card} />
+              {filteredScenarioCards.map((scenarioCard) => (
+                <ScenarioCard key={scenarioCard.passNumber} card={scenarioCard} />
               ))}
             </div>
           )
         ) : (
-          gmCards.length === 0 ? (
+          gmReadyScenarioCards.length === 0 ? (
             // GM可能シナリオがない場合
             <div className={styles.emptyMessage}>GM可能シナリオはまだありません。</div>
           ) : (
             <div className={styles.cardGrid}>
-              {gmCards.map((card) => (
-                <div key={card.id} className={styles.gmCard}>
-                  <h3 className={styles.gmCardTitle}>{card.title}</h3>
-                  {card.category && <p className={styles.gmCardInfo}>カテゴリ: {card.category}</p>}
-                  {card.production && <p className={styles.gmCardInfo}>制作: {card.production}</p>}
-                  {card.creator && <p className={styles.gmCardInfo}>作者: {card.creator}</p>}
-                  {card.recommendedPlayers && <p className={styles.gmCardInfo}>推奨人数: {card.recommendedPlayers}</p>}
-                  {card.playTime && <p className={styles.gmCardInfo}>プレイ時間: {card.playTime}</p>}
-                  {card.scenarioUrl && (
-                    <p className={styles.gmCardInfo}>
-                      <a href={card.scenarioUrl} target="_blank" rel="noopener noreferrer" className={styles.gmCardLink}>
-                        シナリオリンク
-                      </a>
-                    </p>
-                  )}
-                  {card.notes && <p className={styles.gmCardNotes}>{card.notes}</p>}
-                </div>
+              {gmReadyScenarioCards.map((gmScenario) => (
+                <GMScenarioCard key={gmScenario.id} card={gmScenario} />
               ))}
             </div>
           )

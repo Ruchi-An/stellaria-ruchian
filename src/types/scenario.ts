@@ -38,8 +38,8 @@ export interface GMScenarioCard {
   production?: string;
   // 作者様
   creator?: string;
-  // 推奨人数
-  recommendedPlayers?: string;
+  // PL人数
+  plPlayers?: string;
   // プレイ時間
   playTime?: string;
   // GM卓回数
@@ -48,4 +48,8 @@ export interface GMScenarioCard {
   scenarioUrl?: string;
   // メモ/備考
   notes?: string;
+  // 画像URL（pngなど）
+  cardImageUrl?: string;
+  // 配信可否
+  streamOkng?: boolean;
 }

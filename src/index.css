@@ -1,8 +1,48 @@
 :root {
+  /* === カラーパレット === */
+  /* プライマリーカラー（青系ガラスモーフィズム） */
+  --color-primary: rgba(150, 200, 255, 0.8);
+  --color-primary-light: rgba(200, 230, 255, 0.6);
+  --color-primary-dark: rgba(100, 180, 255, 0.9);
+  
+  /* アクセントカラー（星・ハイライト） */
+  --color-accent: #ffd34d;
+  --color-accent-glow: rgba(250, 244, 127, 0.6);
+  
+  /* 背景・ガラス効果 */
+  --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08));
+  --glass-bg-light: linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.10));
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --glass-border-strong: rgba(150, 200, 255, 0.5);
+  
+  /* テキストカラー */
+  --text-primary: #f7f9ff;
+  --text-secondary: rgba(255, 255, 255, 0.85);
+  --text-muted: rgba(255, 255, 255, 0.6);
+  
+  /* シャドウ */
+  --shadow-small: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-medium: 0 8px 24px rgba(0, 0, 0, 0.25);
+  --shadow-large: 0 12px 40px rgba(0, 0, 0, 0.35);
+  --shadow-glow: 0 0 10px rgba(150, 200, 255, 0.5);
+  
+  /* ボーダーラディウス */
+  --radius-small: 12px;
+  --radius-medium: 20px;
+  --radius-large: 28px;
+  
+  /* スペーシング */
+  --spacing-xs: 8px;
+  --spacing-sm: 16px;
+  --spacing-md: 24px;
+  --spacing-lg: 32px;
+  --spacing-xl: 48px;
+  
+  /* フォント設定 */
   font-family: 'Segoe UI', 'M PLUS Rounded 1c', system-ui, -apple-system, sans-serif;
   line-height: 1.6;
   font-weight: 400;
-  color: #f7f9ff;
+  color: var(--text-primary);
   background-color: #0a0e27;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -17,6 +57,7 @@ a {
   font-weight: 600;
   color: #b6c7ff;
   text-decoration: none;
+  transition: color 0.3s ease;
 }
 
 a:hover {

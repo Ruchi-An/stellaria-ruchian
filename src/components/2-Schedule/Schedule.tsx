@@ -1,6 +1,5 @@
 // Reactのフックをインポート
 import { useState } from "react";
-import Holidays from "date-holidays";
 import sharedStyles from "./Schedule.shared.module.css";
 import styles from "./Schedule.module.css";
 import { useSchedules } from "../../lib/useSchedules";
@@ -24,8 +23,6 @@ export function SchedulePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   // 日にち未定セクションの開閉状態
   const [isUndefinedSchedulesOpen, setIsUndefinedSchedulesOpen] = useState(true);
-  // 日本の祝日判定インスタンス
-  const holidays = new Holidays('JP');
   
   // 今日の日付キー（YYYY-MM-DD）
   const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;

@@ -34,9 +34,9 @@
 
 .modalContent {
   background: linear-gradient(135deg, 
-    rgba(200, 230, 255, 0.18) 0%,
-    rgba(220, 240, 255, 0.15) 50%,
-    rgba(180, 220, 255, 0.18) 100%);
+    rgba(100, 155, 255, 0.92) 0%,
+    rgba(90, 145, 255, 0.88) 50%,
+    rgba(80, 135, 255, 0.92) 100%);
   border: 2px solid rgba(150, 200, 255, 0.5);
   border-radius: 28px;
   box-shadow:
@@ -101,6 +101,9 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   letter-spacing: 0.06em;
   padding-right: 40px;
+  text-align: center;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+  padding-bottom: 16px;
 }
 
 .modalBody {

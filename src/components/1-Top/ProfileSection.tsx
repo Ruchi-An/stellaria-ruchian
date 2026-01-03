@@ -1,6 +1,5 @@
 import type { CSSProperties } from "react";
 import { Link } from "react-router-dom";
-import styles from './ProfileSection.module.css';
 
 export function ProfileSection() {
   const sectionStyle = { '--float-delay': '0.4s' } as CSSProperties;
@@ -11,12 +10,12 @@ export function ProfileSection() {
       style={sectionStyle}
     >
       <div style={{ maxWidth: 1080, margin: "0 auto" }}>
-        <div className={styles.labelRow}>
-          <span className={styles.labelIcon}>✦</span>
-          <span className={styles.labelText}>Profile</span>
-          <span className={styles.labelIcon}>✦</span>
+        <div className="sectionLabelRow">
+          <span className="sectionLabelIcon">✦</span>
+          <span className="sectionLabelText">Profile</span>
+          <span className="sectionLabelIcon">✦</span>
         </div>
-        <p className={styles.description}>
+        <p className="sectionDescription">
           （未実装）
         </p>
         <div style={{ marginTop: 20, textAlign: 'center' }}>

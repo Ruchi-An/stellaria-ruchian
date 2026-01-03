@@ -20,11 +20,13 @@ type GMFormState = {
   category: string;
   production: string;
   creator: string;
-  recommendedPlayers: string;
+  plPlayers: string;
   playTime: string;
   gmPlayCount: string;
   scenarioUrl: string;
   notes: string;
+  cardImageUrl: string;
+  streamOkng: boolean;
 };
 
 const emptyGMForm: GMFormState = {
@@ -33,11 +35,13 @@ const emptyGMForm: GMFormState = {
   category: "",
   production: "",
   creator: "",
-  recommendedPlayers: "",
+  plPlayers: "",
   playTime: "",
   gmPlayCount: "",
   scenarioUrl: "",
   notes: "",
+  cardImageUrl: "",
+  streamOkng: false,
 };
 
 function toGMFormState(row: Partial<GMScenarioCard>): GMFormState {
@@ -47,11 +51,13 @@ function toGMFormState(row: Partial<GMScenarioCard>): GMFormState {
     category: row.category ?? "",
     production: row.production ?? "",
     creator: row.creator ?? "",
-    recommendedPlayers: row.recommendedPlayers ?? "",
+    plPlayers: row.plPlayers ?? "",
     playTime: row.playTime ?? "",
     gmPlayCount: row.gmPlayCount?.toString() ?? "",
     scenarioUrl: row.scenarioUrl ?? "",
     notes: row.notes ?? "",
+    cardImageUrl: row.cardImageUrl ?? "",
+    streamOkng: row.streamOkng ?? false,
   };
 }
 
@@ -122,6 +128,7 @@ export function ScenarioAdminPage() {
     const [gmCards, setGmCards] = useState<GMScenarioCard[]>([]);
     const [gmLoading, setGmLoading] = useState(true);
     const [gmSaving, setGmSaving] = useState(false);
+    const [gmUploading, setGmUploading] = useState(false);
     const [gmForm, setGmForm] = useState<GMFormState>(emptyGMForm);
     const [gmMessage, setGmMessage] = useState<string>("");
   const [cards, setCards] = useState<ScenarioRow[]>([]);
@@ -148,7 +155,21 @@ export function ScenarioAdminPage() {
         .select("*")
         .order("id", { ascending: false });
       if (error) throw error;
-      setGmCards((data ?? []) as GMScenarioCard[]);
+      const mapped: GMScenarioCard[] = (data ?? []).map((row: any) => ({
+        id: row.id,
+        title: row.title ?? "",
+        category: row.category ?? "",
+        production: row.production ?? "",
+        creator: row.creator ?? "",
+        plPlayers: row.pl_players ?? row.recommended_players ?? "",
+        playTime: row.play_time ?? "",
+        gmPlayCount: row.gm_play_count ?? null,
+        scenarioUrl: row.scenario_url ?? "",
+        notes: row.notes ?? "",
+        cardImageUrl: row.card_image_url ?? "",
+        streamOkng: row.stream_okng ?? false,
+      }));
+      setGmCards(mapped);
     } catch (err) {
       setGmMessage("GMシナリオの読み込みに失敗しました");
     } finally {
@@ -250,11 +271,13 @@ export function ScenarioAdminPage() {
       category: gmForm.category || null,
       production: gmForm.production || null,
       creator: gmForm.creator || null,
-      recommendedPlayers: gmForm.recommendedPlayers || null,
-      playTime: gmForm.playTime || null,
-      gmPlayCount: gmForm.gmPlayCount ? Number(gmForm.gmPlayCount) : null,
-      scenarioUrl: gmForm.scenarioUrl || null,
+      pl_players: gmForm.plPlayers || null,
+      play_time: gmForm.playTime || null,
+      gm_play_count: gmForm.gmPlayCount ? Number(gmForm.gmPlayCount) : null,
+      scenario_url: gmForm.scenarioUrl || null,
       notes: gmForm.notes || null,
+      card_image_url: gmForm.cardImageUrl || null,
+      stream_okng: gmForm.streamOkng,
     };
     try {
       if (gmForm.id) {
@@ -390,6 +413,39 @@ export function ScenarioAdminPage() {
     }
   };
 
+  const handleGMUploadImage = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setGmUploading(true);
+      setGmMessage("画像をアップロードしています...");
+      const ext = file.name.split(".").pop();
+      const fileName = `gm-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error: uploadError } = await supabase.storage
+        .from(SCENARIO_BUCKET)
+        .upload(fileName, file, { cacheControl: "3600", upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: publicUrlData } = supabase.storage
+        .from(SCENARIO_BUCKET)
+        .getPublicUrl(fileName);
+
+      const publicUrl = publicUrlData?.publicUrl;
+      if (!publicUrl) throw new Error("公開URLの取得に失敗しました");
+
+      setGmForm((prev) => ({ ...prev, cardImageUrl: publicUrl }));
+      setGmMessage("画像URLをフォームに設定しました");
+    } catch (err) {
+      console.error("Upload error", err);
+      setGmMessage("画像アップロードに失敗しました。バケット名と権限を確認してください。");
+    } finally {
+      setGmUploading(false);
+      e.target.value = "";
+    }
+  };
+
   // --- 通過済み→GM連携 ---
   const handleCopyToGM = (card: ScenarioRow) => {
     setGmForm({
@@ -398,11 +454,13 @@ export function ScenarioAdminPage() {
       category: card.category ?? "",
       production: card.production ?? "",
       creator: card.creator ?? "",
-      recommendedPlayers: "",
+      plPlayers: "",
       playTime: "",
       gmPlayCount: "",
       scenarioUrl: card.scenarioUrl ?? "",
       notes: "",
+      cardImageUrl: card.cardImageUrl ?? "",
+      streamOkng: false,
     });
     setGmMessage("通過済みシナリオから項目をコピーしました。必要に応じて編集して保存してください。");
   };
@@ -471,7 +529,7 @@ export function ScenarioAdminPage() {
                 </label>
                 <label className={styles.field}>
                   <span>推奨人数</span>
-                  <input name="recommendedPlayers" value={gmForm.recommendedPlayers} onChange={handleGMInput} />
+                  <input name="plPlayers" value={gmForm.plPlayers} onChange={handleGMInput} />
                 </label>
                 <label className={styles.field}>
                   <span>プレイ時間</span>
@@ -486,8 +544,43 @@ export function ScenarioAdminPage() {
                   <input name="scenarioUrl" value={gmForm.scenarioUrl} onChange={handleGMInput} />
                 </label>
                 <label className={styles.field}>
+                  <span>配信可否</span>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                    <input 
+                      type="checkbox" 
+                      name="streamOkng" 
+                      checked={gmForm.streamOkng} 
+                      onChange={(e) => setGmForm(prev => ({ ...prev, streamOkng: e.target.checked }))}
+                      style={{ width: 'auto', cursor: 'pointer' }}
+                    />
+                    <span style={{ fontSize: '0.9rem' }}>配信可</span>
+                  </label>
+                </label>
+                <label className={styles.field}>
                   <span>メモ/備考</span>
                   <textarea name="notes" value={gmForm.notes} onChange={handleGMInput} rows={2} />
+                </label>
+                <label className={styles.field}>
+                  <span>カード画像URL</span>
+                  <input
+                    name="cardImageUrl"
+                    value={gmForm.cardImageUrl}
+                    onChange={handleGMInput}
+                    placeholder="アップロード後に自動入力されます"
+                  />
+                  {gmForm.cardImageUrl && (
+                    <div>
+                      <img src={gmForm.cardImageUrl} alt="preview" className={styles.preview} />
+                    </div>
+                  )}
+                </label>
+                <label className={styles.field}>
+                  <span>画像アップロード</span>
+                  <input type="file" accept="image/*" onChange={handleGMUploadImage} disabled={gmUploading} />
+                  <button type="button" className={styles.uploadButton} onClick={(e) => (e.currentTarget.previousElementSibling as HTMLInputElement)?.click()} disabled={gmUploading}>
+                    <span>{gmUploading ? "アップロード中..." : "画像を選択"}</span>
+                  </button>
+                  <p className={styles.uploadHint}>Supabase Storage ({SCENARIO_BUCKET}) にアップロードし、公開URLを自動でセットします。</p>
                 </label>
               </div>
               <div className={styles.formActions}>
@@ -527,9 +620,10 @@ export function ScenarioAdminPage() {
                       </div>
                       <p className={styles.cardSub}>{card.category || "カテゴリ未設定"}</p>
                       <p className={styles.cardSub}>制作: {card.production || "-"} / 作者: {card.creator || "-"}</p>
-                      <p className={styles.cardSub}>推奨人数: {card.recommendedPlayers || "-"} / プレイ時間: {card.playTime || "-"}</p>
-                      <p className={styles.cardSub}>GM卓回数: {card.gmPlayCount ?? "-"}</p>
+                      <p className={styles.cardSub}>推奨人数: {card.plPlayers || "-"} / プレイ時間: {card.playTime || "-"}</p>
+                      <p className={styles.cardSub}>GM卓回数: {card.gmPlayCount ?? "-"} / 配信: {card.streamOkng === true ? "可" : card.streamOkng === false ? "否" : "-"}</p>
                       {card.scenarioUrl && <a href={card.scenarioUrl} target="_blank" rel="noreferrer" className={styles.smallLink}>シナリオ</a>}
+                      {card.cardImageUrl && <a href={card.cardImageUrl} target="_blank" rel="noreferrer" className={styles.smallLink}>画像</a>}
                       {card.notes && <div className={styles.cardSub}>{card.notes}</div>}
                     </div>
                     <div className={styles.cardActions}>

@@ -66,19 +66,29 @@ function getTimeCategory(timeStr: string | null): string {
 
 export function ScheduleAdminPage() {
   const now = new Date();
+  // 表示中の年月
   const [displayDate, setDisplayDate] = useState({ year: now.getFullYear(), month: now.getMonth() });
+  // スケジュールデータ一覧
   const [schedules, setSchedules] = useState<ScheduleData[]>([]);
-  const [loading, setLoading] = useState(true);
+  // データ読み込み中フラグ
+  const [isLoading, setIsLoading] = useState(true);
+  // 編集モーダルの表示状態
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  // 現在編集中のイベント
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+  // 選択された日付（未使用？）
   const [_selectedDate, setSelectedDate] = useState<string>("");
+  // ゲーム名のリスト（オートコンプリート用）
   const [gameNames, setGameNames] = useState<string[]>([]);
+  // 日にち未定セクションの開閉状態
   const [isUndefinedSchedulesOpen, setIsUndefinedSchedulesOpen] = useState(true);
+  // 日本の祝日判定インスタンス
   const holidays = new Holidays('JP');
 
+  // 今日の日付キー（YYYY-MM-DD形式）
   const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
-  // フォーム用の状態
+  // フォーム入力用のステート
   const [formData, setFormData] = useState({
     title: "",
     play_date: "",
@@ -93,7 +103,7 @@ export function ScheduleAdminPage() {
   // データベースからスケジュールを取得
   const fetchSchedules = async () => {
     try {
-      setLoading(true);
+      setIsLoading(true);
       const { data, error } = await supabase
         .from('schedule_datas')
         .select('id, title, play_date, start_time, end_time, type, category, game_name, memo')
@@ -112,7 +122,7 @@ export function ScheduleAdminPage() {
     } catch (err) {
       console.error('Error:', err);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -382,7 +392,7 @@ export function ScheduleAdminPage() {
         <p className={styles.subtitle}>管理者専用 - スケジュール編集ページ</p>
       </section>
 
-      {loading ? (
+      {isLoading ? (
         <section className={sharedStyles.calendarSection}>
           <div className={sharedStyles.calendarCard}>
             {/* 読み込み中メッセージ用クラスを適用 */}
