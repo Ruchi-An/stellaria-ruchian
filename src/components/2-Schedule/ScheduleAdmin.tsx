@@ -41,8 +41,6 @@ type ScheduleData = {
   memo: string | null;
 };
 
-const weekdayLabels = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-
 // タイプとカテゴリの定義
 const TYPE_OPTIONS = ["🎮", "📚", "🌏", "配信休み", "仕事休み", "予定未定"];
 
@@ -203,7 +201,7 @@ export function ScheduleAdminPage() {
   const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
   const totalCells = Math.ceil((firstDayOfMonth + daysInMonth) / 7) * 7;
 
-  const calendarCells: CalendarCell[] = Array.from({ length: totalCells }, (_, index) => {
+  Array.from({ length: totalCells }, (_, index) => {
     const dateNumber = index - firstDayOfMonth + 1;
     if (dateNumber < 1 || dateNumber > daysInMonth) {
       return {
@@ -672,8 +670,8 @@ export function ScheduleAdminPage() {
 
       {/* 編集モーダル */}
       {isEditModalOpen && (
-        <div className={styles.modalOverlay} onClick={handleCloseEditModal}>
-          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
             <button className={styles.modalCloseButton} onClick={handleCloseEditModal} aria-label="閉じる">
               ✕
             </button>
