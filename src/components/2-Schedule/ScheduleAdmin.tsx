@@ -5,18 +5,6 @@ import styles from "./ScheduleAdmin.module.css";
 import { supabase } from "../../lib/supabaseClient";
 import { ScheduleCalendar } from "./ScheduleCalendar";
 
-type CalendarCell = {
-  label: string;
-  key: string;
-  isToday: boolean;
-  events: Event[];
-  isEmpty: boolean;
-  weekday?: number;
-  isWeekend?: boolean;
-  isHoliday?: boolean;
-  badgeTypes?: Array<'stream-off' | 'work-off' | 'tentative'>;
-};
-
 type Event = {
   id?: number;
   title: string;
