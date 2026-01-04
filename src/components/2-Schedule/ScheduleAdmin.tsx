@@ -75,7 +75,7 @@ export function ScheduleAdminPage() {
   // 日にち未定セクションの開閉状態
   const [isUndefinedSchedulesOpen, setIsUndefinedSchedulesOpen] = useState(true);
   // バッジ管理（DB持ち）
-  const { badges, loading: badgesLoading, addBadge, removeBadge, getBadgesForDate } = useScheduleBadges();
+  const { badges, addBadge, removeBadge, getBadgesForDate } = useScheduleBadges();
   
   // 日本の祝日判定インスタンス
   const holidays = new Holidays('JP');
