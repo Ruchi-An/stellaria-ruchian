@@ -809,6 +809,13 @@
   .eventTime {
     display: none;
   }
+
+  /* バッジをスマホでも見やすく */
+  .badgeMarker {
+    font-size: 0.75rem;
+    padding: 3px 5px;
+    min-width: 18px;
+  }
 }
 
 @media (max-width: 500px) {
