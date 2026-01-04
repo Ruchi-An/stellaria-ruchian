@@ -266,7 +266,7 @@
 
 .legendText {
   color: rgba(255, 255, 255, 0.85);
-  font-size: 1.0rem;
+  font-size: clamp(0.7em, 2vw, 1.2rem);
 }
 
 /* ====================================
@@ -370,9 +370,9 @@
 
 /* 配信休み：淡いオレンジ */
 .badge-stream-off {
-  background: rgba(255, 180, 120, 0.75);
+  background: rgba(255, 68, 68, 0.75);
   color: #ffffff;
-  border-color: rgba(255, 150, 100, 0.5);
+  border-color: rgba(255, 100, 100, 0.5);
 }
 
 /* 仕事休み：淡いブルー */
@@ -811,18 +811,8 @@
   }
 
   /* バッジをスマホでも見やすく */
-  .dateRow {
-    flex-wrap: wrap;
-    align-items: center;
-  }
-
-  .badgeContainer {
-    flex-basis: 100%;
-    margin-top: 2px;
-  }
-
   .badgeMarker {
-    font-size: 0.75rem;
+    font-size: clamp(0.3rem, 1.5vw, 0.85rem);
     padding: 3px 5px;
     min-width: 18px;
   }
