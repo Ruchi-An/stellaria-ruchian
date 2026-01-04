@@ -515,35 +515,40 @@
   background: linear-gradient(135deg, rgba(100, 255, 100, 0.25), rgba(100, 255, 100, 0.15));
   border: 2px solid rgb(100, 255, 100);
   box-shadow: 0 0 12px rgba(100, 255, 100, 0.5), 0 4px 14px rgba(0, 0, 0, 0.2);
-  border-left: 10px solid rgb(100, 255, 100);
+  border-left: 8px solid rgb(100, 255, 100);
+  border-right: 8px solid rgb(100, 255, 100);
 }
 
 .event-afternoon {
   background: linear-gradient(135deg, rgba(255, 165, 0, 0.25), rgba(255, 165, 0, 0.15));
   border: 2px solid rgb(255, 165, 0);
   box-shadow: 0 0 12px rgba(255, 165, 0, 0.5), 0 4px 14px rgba(0, 0, 0, 0.2);
-  border-left: 10px solid rgb(255, 165, 0);
+  border-left: 8px solid rgb(255, 165, 0);
+  border-right: 8px solid rgb(255, 165, 0);
 }
 
 .event-evening {
   background: linear-gradient(135deg, rgba(100, 180, 255, 0.25), rgba(100, 180, 255, 0.15));
   border: 2px solid rgb(100, 180, 255);
   box-shadow: 0 0 12px rgba(100, 180, 255, 0.5), 0 4px 14px rgba(0, 0, 0, 0.2);
-  border-left: 10px solid rgb(100, 180, 255);
+  border-left: 8px solid rgb(100, 180, 255);
+  border-right: 8px solid rgb(100, 180, 255);
 }
 
 .event-late-night {
   background: linear-gradient(135deg, rgba(180, 100, 255, 0.25), rgba(180, 100, 255, 0.15));
   border: 2px solid rgb(180, 100, 255);
   box-shadow: 0 0 12px rgba(180, 100, 255, 0.5), 0 4px 14px rgba(0, 0, 0, 0.2);
-  border-left: 10px solid rgb(180, 100, 255);
+  border-left: 8px solid rgb(180, 100, 255);
+  border-right: 8px solid rgb(180, 100, 255);
 }
 
 .event-undefined {
   background: linear-gradient(135deg, rgba(200, 200, 200, 0.25), rgba(200, 200, 200, 0.15));
   border: 2px solid rgb(200, 200, 200);
   box-shadow: 0 0 12px rgba(200, 200, 200, 0.3), 0 4px 14px rgba(0, 0, 0, 0.2);
-  border-left: 10px solid rgb(200, 200, 200);
+  border-left: 8px solid rgb(200, 200, 200);
+  border-right: 8px solid rgb(200, 200, 200);
 }
 
 /* ====================================
