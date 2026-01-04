@@ -3,6 +3,7 @@ import { useState } from "react";
 import sharedStyles from "./Schedule.shared.module.css";
 import styles from "./Schedule.module.css";
 import { useSchedules } from "../../lib/useSchedules";
+import { useScheduleBadges } from "../../lib/useScheduleBadges";
 import type { Event } from "../../lib/useSchedules";
 import { ScheduleCalendar } from "./ScheduleCalendar";
 import { UndefinedScheduleList } from "./UndefinedScheduleList";
@@ -17,6 +18,8 @@ export function SchedulePage() {
   const [displayDate, setDisplayDate] = useState({ year: now.getFullYear(), month: now.getMonth() });
   // スケジュール一覧・ローディング状態
   const { schedules, loading } = useSchedules();
+  // バッジ一覧・ローディング状態
+  const { badges } = useScheduleBadges();
   // モーダルで表示する選択中イベント
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   // モーダル表示状態
@@ -27,40 +30,10 @@ export function SchedulePage() {
   // 今日の日付キー（YYYY-MM-DD）
   const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
-  // ローカルバッジを読み込み（localStorageから）
-  const [localBadges] = useState<Record<string, Set<'stream-off' | 'work-off' | 'tentative'>>>(() => {
-    const saved = localStorage.getItem('scheduleBadges');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved) as Record<string, string[]>;
-        const result: Record<string, Set<'stream-off' | 'work-off' | 'tentative'>> = {};
-        for (const [key, value] of Object.entries(parsed)) {
-          result[key] = new Set(value as Array<'stream-off' | 'work-off' | 'tentative'>);
-        }
-        return result;
-      } catch (e) {
-        console.error('Failed to parse badges from localStorage:', e);
-      }
-    }
-    return {};
-  });
-
-  // 配信不可日のセット（高速な検索のため）
-  const streamOffDays = new Set(
-    Object.entries(localBadges)
-      .filter(([_, badges]) => badges.has('stream-off'))
-      .map(([date]) => date)
-  );
-  const workOffDays = new Set(
-    Object.entries(localBadges)
-      .filter(([_, badges]) => badges.has('work-off'))
-      .map(([date]) => date)
-  );
-  const tentativeDays = new Set(
-    Object.entries(localBadges)
-      .filter(([_, badges]) => badges.has('tentative'))
-      .map(([date]) => date)
-  );
+  // 配信不可日のセット（DBから）
+  const streamOffDays = new Set(badges.filter(b => b.badge_type === 'stream-off').map(b => b.play_date));
+  const workOffDays = new Set(badges.filter(b => b.badge_type === 'work-off').map(b => b.play_date));
+  const tentativeDays = new Set(badges.filter(b => b.badge_type === 'tentative').map(b => b.play_date));
 
   // スケジュールデータを日付ごとにグループ化、未定リスト分離
   const eventsByDate: Record<string, Event[]> = {};

@@ -3,6 +3,7 @@ import Holidays from "date-holidays";
 import sharedStyles from "./Schedule.shared.module.css";
 import styles from "./ScheduleAdmin.module.css";
 import { supabase } from "../../lib/supabaseClient";
+import { useScheduleBadges, type BadgeType } from "../../lib/useScheduleBadges";
 import { ScheduleCalendar } from "./ScheduleCalendar";
 
 type Event = {
@@ -73,32 +74,9 @@ export function ScheduleAdminPage() {
   const [gameNames, setGameNames] = useState<string[]>([]);
   // 日にち未定セクションの開閉状態
   const [isUndefinedSchedulesOpen, setIsUndefinedSchedulesOpen] = useState(true);
-  // ローカルバッジ管理（localStorageに永続化）
-  const [localBadges, setLocalBadges] = useState<Record<string, Set<'stream-off' | 'work-off' | 'tentative'>>>(() => {
-    const saved = localStorage.getItem('scheduleBadges');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved) as Record<string, string[]>;
-        const result: Record<string, Set<'stream-off' | 'work-off' | 'tentative'>> = {};
-        for (const [key, value] of Object.entries(parsed)) {
-          result[key] = new Set(value as Array<'stream-off' | 'work-off' | 'tentative'>);
-        }
-        return result;
-      } catch (e) {
-        console.error('Failed to parse badges from localStorage:', e);
-      }
-    }
-    return {};
-  });
+  // バッジ管理（DB持ち）
+  const { badges, loading: badgesLoading, addBadge, removeBadge, getBadgesForDate } = useScheduleBadges();
   
-  // localBadgesをlocalStorageに保存
-  useEffect(() => {
-    const toSave: Record<string, string[]> = {};
-    for (const [key, value] of Object.entries(localBadges)) {
-      toSave[key] = Array.from(value);
-    }
-    localStorage.setItem('scheduleBadges', JSON.stringify(toSave));
-  }, [localBadges]);
   // 日本の祝日判定インスタンス
   const holidays = new Holidays('JP');
 
@@ -207,9 +185,8 @@ export function ScheduleAdminPage() {
     const isWeekend = weekday === 0 || weekday === 6;
     const isHoliday = Boolean(holidays.isHoliday(dateObj));
     
-    // ローカルバッジを配列に変換
-    const badgeTypes: Array<'stream-off' | 'work-off' | 'tentative'> = 
-      Array.from(localBadges[dateKey] ?? new Set());
+    // DBからバッジを配列に変換
+    const badgeTypes: Array<'stream-off' | 'work-off' | 'tentative'> = getBadgesForDate(dateKey);
 
     return {
       key: dateKey,
@@ -278,7 +255,7 @@ export function ScheduleAdminPage() {
   };
 
   // 日付セルを右クリック（バッジのトグル）
-  const handleCellRightClick = (dateKey: string, e: React.MouseEvent) => {
+  const handleCellRightClick = async (dateKey: string, e: React.MouseEvent) => {
     e.preventDefault();
     
     // バッジタイプを選択
@@ -286,7 +263,7 @@ export function ScheduleAdminPage() {
     
     if (!choice) return;
     
-    const typeMap: Record<string, 'stream-off' | 'work-off' | 'tentative'> = {
+    const typeMap: Record<string, BadgeType> = {
       '1': 'stream-off',
       '2': 'work-off',
       '3': 'tentative',
@@ -298,28 +275,31 @@ export function ScheduleAdminPage() {
       return;
     }
     
-    // ローカルバッジを更新
-    setLocalBadges(prev => {
-      const newBadges = { ...prev };
-      if (!newBadges[dateKey]) {
-        newBadges[dateKey] = new Set();
-      } else {
-        // 既存のSetをコピーしないと、元のオブジェクトが変更されてしまう
-        newBadges[dateKey] = new Set(newBadges[dateKey]);
-      }
+    try {
+      // 既存のバッジを確認
+      const existingBadges = getBadgesForDate(dateKey);
       
-      // トグル：あれば削除、なければ追加
-      if (newBadges[dateKey].has(selectedType)) {
-        newBadges[dateKey].delete(selectedType);
-        if (newBadges[dateKey].size === 0) {
-          delete newBadges[dateKey];
+      if (existingBadges.includes(selectedType)) {
+        // 削除
+        const result = await removeBadge(dateKey, selectedType);
+        if (result.success) {
+          // 削除成功
+        } else {
+          alert('バッジの削除に失敗しました');
         }
       } else {
-        newBadges[dateKey].add(selectedType);
+        // 追加
+        const result = await addBadge(dateKey, selectedType);
+        if (result.success) {
+          // 追加成功
+        } else {
+          alert('バッジの追加に失敗しました');
+        }
       }
-      
-      return newBadges;
-    });
+    } catch (err) {
+      console.error('Badge operation error:', err);
+      alert('エラーが発生しました');
+    }
   };
 
   // 新規作成ボタンをクリック
@@ -577,9 +557,9 @@ export function ScheduleAdminPage() {
               todayKey={todayKey}
               eventsByDate={eventsByDate}
               onEventClick={handleEventClick}
-              streamOffDays={new Set(Object.entries(localBadges).filter(([_, badges]) => badges.has('stream-off')).map(([date]) => date))}
-              workOffDays={new Set(Object.entries(localBadges).filter(([_, badges]) => badges.has('work-off')).map(([date]) => date))}
-              tentativeDays={new Set(Object.entries(localBadges).filter(([_, badges]) => badges.has('tentative')).map(([date]) => date))}
+              streamOffDays={new Set(badges.filter(b => b.badge_type === 'stream-off').map(b => b.play_date))}
+              workOffDays={new Set(badges.filter(b => b.badge_type === 'work-off').map(b => b.play_date))}
+              tentativeDays={new Set(badges.filter(b => b.badge_type === 'tentative').map(b => b.play_date))}
               onCellClick={handleCellClick}
               onCellRightClick={handleCellRightClick}
               isClickable={true}

@@ -811,6 +811,16 @@
   }
 
   /* バッジをスマホでも見やすく */
+  .dateRow {
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .badgeContainer {
+    flex-basis: 100%;
+    margin-top: 2px;
+  }
+
   .badgeMarker {
     font-size: 0.75rem;
     padding: 3px 5px;
