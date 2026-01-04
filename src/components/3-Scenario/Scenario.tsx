@@ -22,6 +22,10 @@ export function ScenarioPage() {
   
   // 現在表示中のタブ（'passed': 通過済み, 'gm-ready': GM可能）
   const [activeTab, setActiveTab] = useState<TabType>(getInitialTab());
+  // 通過済みシナリオのカテゴリサブタブ
+  const [activeCategoryTab, setActiveCategoryTab] = useState<string>('all');
+  // 画面幅が600px以下かどうか
+  const [isNarrowScreen, setIsNarrowScreen] = useState(false);
 
   // URLクエリパラメータが変わったらタブも切り替え
   useEffect(() => {
@@ -30,6 +34,18 @@ export function ScenarioPage() {
     if (tab === 'gm-ready') setActiveTab('gm-ready');
     else setActiveTab('passed');
   }, [location.search]);
+
+  // 画面幅の監視
+  useEffect(() => {
+    const checkScreenWidth = () => {
+      setIsNarrowScreen(window.innerWidth < 600);
+    };
+    
+    checkScreenWidth();
+    window.addEventListener('resize', checkScreenWidth);
+    
+    return () => window.removeEventListener('resize', checkScreenWidth);
+  }, []);
   
   // 通過済みシナリオのカードリスト
   const [passedScenarioCards, setPassedScenarioCards] = useState<ScenarioCardType[]>([]);
@@ -38,6 +54,15 @@ export function ScenarioPage() {
   // データ読み込み中フラグ
   const [isLoading, setIsLoading] = useState(true);
   
+  // サブタブが変更されたらフィルタを自動連動
+  useEffect(() => {
+    if (activeCategoryTab === 'all') {
+      setSelectedCategoryFilter('');
+    } else {
+      setSelectedCategoryFilter(activeCategoryTab);
+    }
+  }, [activeCategoryTab]);
+
   // === 絞り込み用のステート ===
   // カテゴリによる絞り込み（リストから選択）
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('');
@@ -47,6 +72,8 @@ export function ScenarioPage() {
   const [memberSearchText, setMemberSearchText] = useState<string>('');
   // 絞り込み欄の表示/非表示トグル
   const [isFilterBoxVisible, setIsFilterBoxVisible] = useState(false);
+  // ソート順（'asc': 昇順（古い順）, 'desc': 降順（新しい順））
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   useEffect(() => {
     // データベースからシナリオカード情報を取得する関数
@@ -171,18 +198,38 @@ export function ScenarioPage() {
     fetchScenarioCards();
   }, []);
 
-  // 絞り込み条件に合致するシナリオのみを抽出
-  const filteredScenarioCards = passedScenarioCards.filter(scenarioCard => {
-    // タイトル絞り込み
-    const isTitleMatched = titleSearchText ? scenarioCard.title.toLowerCase().includes(titleSearchText.toLowerCase()) : true;
-    // メンバー絞り込み（GM/ST、プレイヤー両方を検索対象に含める）
-    const isMemberMatched = memberSearchText ? (
-      scenarioCard.members.some(memberName => memberName.toLowerCase().includes(memberSearchText.toLowerCase())) ||
-      (scenarioCard.gmSt && scenarioCard.gmSt.toLowerCase().includes(memberSearchText.toLowerCase()))
-    ) : true;
-    // カテゴリ絞り込み
-    const isCategoryMatched = selectedCategoryFilter ? scenarioCard.category === selectedCategoryFilter : true;
-    return isTitleMatched && isMemberMatched && isCategoryMatched;
+  // 絞り込み条件に合致するシナリオのみを抽出し、通過日の古い順でpassNumberを振る
+  const filteredScenarioCards = passedScenarioCards
+    .filter(scenarioCard => {
+      // タイトル絞り込み
+      const isTitleMatched = titleSearchText ? scenarioCard.title.toLowerCase().includes(titleSearchText.toLowerCase()) : true;
+      // メンバー絞り込み（GM/ST、プレイヤー両方を検索対象に含める）
+      const isMemberMatched = memberSearchText ? (
+        scenarioCard.members.some(memberName => memberName.toLowerCase().includes(memberSearchText.toLowerCase())) ||
+        (scenarioCard.gmSt && scenarioCard.gmSt.toLowerCase().includes(memberSearchText.toLowerCase()))
+      ) : true;
+      // カテゴリ絞り込み
+      const isCategoryMatched = selectedCategoryFilter ? scenarioCard.category === selectedCategoryFilter : true;
+      return isTitleMatched && isMemberMatched && isCategoryMatched;
+    });
+
+  // 1. まず古い順にソートしてpassNumberを振る
+  const cardsWithPassNumber = [...filteredScenarioCards]
+    .sort((a, b) => {
+      const dateA = new Date(a.playDate || 0).getTime();
+      const dateB = new Date(b.playDate || 0).getTime();
+      return dateA - dateB; // 古い順
+    })
+    .map((card, index) => ({
+      ...card,
+      displayPassNumber: index + 1
+    }));
+
+  // 2. 表示順に応じて並び替え
+  const sortedCards = [...cardsWithPassNumber].sort((a, b) => {
+    const dateA = new Date(a.playDate || 0).getTime();
+    const dateB = new Date(b.playDate || 0).getTime();
+    return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
   });
 
   // カテゴリーの選択肢を抽出
@@ -215,6 +262,42 @@ export function ScenarioPage() {
           </button>
         </div>
 
+        {/* カテゴリサブタブUI: 通過済みタブのみ表示 */}
+        {activeTab === 'passed' && (
+          <div className="commonTabs" style={{ marginTop: '1rem', borderTop: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: '1rem' }}>
+            <button 
+              className={`commonTab ${activeCategoryTab === 'all' ? 'active' : ''}`}
+              onClick={() => setActiveCategoryTab('all')}
+            >
+              すべて
+            </button>
+            <button 
+              className={`commonTab ${activeCategoryTab === 'マーダーミステリー' ? 'active' : ''}`}
+              onClick={() => setActiveCategoryTab('マーダーミステリー')}
+            >
+              {isNarrowScreen ? 'マダミス' : 'マーダーミステリー'}
+            </button>
+            <button 
+              className={`commonTab ${activeCategoryTab === 'ストーリープレイング' ? 'active' : ''}`}
+              onClick={() => setActiveCategoryTab('ストーリープレイング')}
+            >
+              {isNarrowScreen ? 'ストプレ' : 'ストーリープレイング'}
+            </button>
+            <button 
+              className={`commonTab ${activeCategoryTab === 'スパイゲーム' ? 'active' : ''}`}
+              onClick={() => setActiveCategoryTab('スパイゲーム')}
+            >
+              {isNarrowScreen ? 'スパイ' : 'スパイゲーム'}
+            </button>
+            <button 
+              className={`commonTab ${activeCategoryTab === 'その他' ? 'active' : ''}`}
+              onClick={() => setActiveCategoryTab('その他')}
+            >
+              その他
+            </button>
+          </div>
+        )}
+
         {/* 絞り込みUI: 通過済みタブのみ表示 */}
         {activeTab === 'passed' && (
           <div className={styles.filterLayout}>
@@ -231,22 +314,12 @@ export function ScenarioPage() {
                     className={styles.filterCloseBtn}
                     aria-label="絞り込みクリア"
                     onClick={() => { 
-                      setSelectedCategoryFilter(''); 
                       setTitleSearchText(''); 
                       setMemberSearchText(''); 
                     }}
                   >
                     ×
                   </button>
-                  <div className={styles.filterRowItem}>
-                    <label htmlFor="filter-category">カテゴリ：</label>
-                    <select id="filter-category" value={selectedCategoryFilter} onChange={e => setSelectedCategoryFilter(e.target.value)}>
-                      <option value="">全て</option>
-                      {availableCategories.map(categoryName => (
-                        <option key={categoryName} value={categoryName}>{categoryName}</option>
-                      ))}
-                    </select>
-                  </div>
                   <div className={styles.filterRowItem}>
                     <label htmlFor="filter-title">タイトル：</label>
                     <input
@@ -267,6 +340,13 @@ export function ScenarioPage() {
                       placeholder="人物名（GM/ST、メンバー問わず）"
                     />
                   </div>
+                  <div className={styles.filterRowItem}>
+                    <label htmlFor="filter-sort">表示順：</label>
+                    <select id="filter-sort" value={sortOrder} onChange={e => setSortOrder(e.target.value as 'asc' | 'desc')}>
+                      <option value="desc">新しい順</option>
+                      <option value="asc">古い順</option>
+                    </select>
+                  </div>
                 </div>
               )}
             </div>
@@ -277,13 +357,13 @@ export function ScenarioPage() {
           // ローディング表示
           <div className={styles.emptyMessage}>Loading...</div>
         ) : activeTab === 'passed' ? (
-          filteredScenarioCards.length === 0 ? (
+          sortedCards.length === 0 ? (
             // 通過済みシナリオがない場合
             <div className={styles.emptyMessage}>通過済みシナリオはまだありません。</div>
           ) : (
             <div className={styles.cardGrid}>
-              {filteredScenarioCards.map((scenarioCard) => (
-                <ScenarioCard key={scenarioCard.passNumber} card={scenarioCard} />
+              {sortedCards.map((scenarioCard) => (
+                <ScenarioCard key={scenarioCard.passNumber} card={scenarioCard} displayPassNumber={scenarioCard.displayPassNumber} />
               ))}
             </div>
           )

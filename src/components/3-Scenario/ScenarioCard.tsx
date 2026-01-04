@@ -8,10 +8,11 @@ import styles from './ScenarioCard.module.css';
 // props型定義
 interface ScenarioCardProps {
   card: ScenarioCard;
+  displayPassNumber?: number; // 絞り込み後の表示用通過番号
 }
 
 // シナリオカードコンポーネント本体
-export function ScenarioCard({ card }: ScenarioCardProps) {
+export function ScenarioCard({ card, displayPassNumber }: ScenarioCardProps) {
   // 画像モーダル表示状態
   const [showModal, setShowModal] = useState(false);
 
@@ -22,7 +23,7 @@ export function ScenarioCard({ card }: ScenarioCardProps) {
         {/* ヘッダー部分 */}
         <div className={styles.cardHeader}>
           <div className={styles.headerLeft}>
-            <span className={styles.passNumber}>#{card.passNumber}</span>
+            <span className={styles.passNumber}>#{displayPassNumber ?? card.passNumber}</span>
             <h3 className={styles.title}>{card.title}</h3>
           </div>
           <span className={styles.category}>{card.category}</span>
