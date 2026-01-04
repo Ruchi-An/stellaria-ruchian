@@ -126,58 +126,6 @@ export function SchedulePage() {
         <section className={sharedStyles.calendarSection}>
           <div className={sharedStyles.calendarCard}>
             <header className={sharedStyles.calendarHeader}>
-              <div className={sharedStyles.legendContainer}>
-                <div className={sharedStyles.legend}>
-                  <div className={sharedStyles.legendItem}>
-                    <span className={`${sharedStyles.legendDot} ${sharedStyles.legendMorning}`} />
-                    <span className={sharedStyles.legendText}>朝</span>
-                  </div>
-                </div>
-                <div className={sharedStyles.legend}>
-                  <div className={sharedStyles.legendItem}>
-                    <span className={`${sharedStyles.legendDot} ${sharedStyles.legendAfternoon}`} />
-                    <span className={sharedStyles.legendText}>昼</span>
-                  </div>
-                </div>
-                <div className={sharedStyles.legend}>
-                  <div className={sharedStyles.legendItem}>
-                    <span className={`${sharedStyles.legendDot} ${sharedStyles.legendEvening}`} />
-                    <span className={sharedStyles.legendText}>夜</span>
-                  </div>
-                </div>
-                <div className={sharedStyles.legend}>
-                  <div className={sharedStyles.legendItem}>
-                    <span className={`${sharedStyles.legendDot} ${sharedStyles.legendLateNight}`} />
-                    <span className={sharedStyles.legendText}>深夜</span>
-                  </div>
-                </div>
-                <div className={sharedStyles.legend}>
-                  <div className={sharedStyles.legendItem}>
-                    <span className={`${sharedStyles.legendDot} ${sharedStyles.legendUndefined}`} />
-                    <span className={sharedStyles.legendText}>時間未定</span>
-                  </div>
-                </div>
-              </div>
-              <div className={sharedStyles.legendContainer} style={{ marginTop: '8px' }}>
-                <div className={sharedStyles.legend}>
-                  <div className={sharedStyles.legendItem}>
-                    <span className={`${sharedStyles.badgeMarker} ${sharedStyles['badge-stream-off']}`} style={{ fontSize: '0.7rem', padding: '1px 3px' }}>✕</span>
-                    <span className={sharedStyles.legendText}>配信休み</span>
-                  </div>
-                </div>
-                <div className={sharedStyles.legend}>
-                  <div className={sharedStyles.legendItem}>
-                    <span className={`${sharedStyles.badgeMarker} ${sharedStyles['badge-work-off']}`} style={{ fontSize: '0.7rem', padding: '1px 3px' }}>○</span>
-                    <span className={sharedStyles.legendText}>仕事休み</span>
-                  </div>
-                </div>
-                <div className={sharedStyles.legend}>
-                  <div className={sharedStyles.legendItem}>
-                    <span className={`${sharedStyles.badgeMarker} ${sharedStyles['badge-tentative']}`} style={{ fontSize: '0.7rem', padding: '1px 3px' }}>?</span>
-                    <span className={sharedStyles.legendText}>予定入るかも</span>
-                  </div>
-                </div>
-              </div>
               <div className={sharedStyles.dateNavigationContainer}>
                 <button
                   className={sharedStyles.navButton}

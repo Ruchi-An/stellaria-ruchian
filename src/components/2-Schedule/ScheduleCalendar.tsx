@@ -28,6 +28,15 @@ function getTimeCategory(timeStr: string | null): string {
   return "undefined";
 }
 
+function getStartMinutes(timeStr: string | null): number {
+  if (!timeStr || timeStr === "未定") return Number.POSITIVE_INFINITY;
+  const match = timeStr.match(/^(\d{1,2}):(\d{2})$/);
+  if (!match) return Number.POSITIVE_INFINITY;
+  const hour = parseInt(match[1], 10);
+  const minute = parseInt(match[2], 10);
+  return hour * 60 + minute;
+}
+
 interface ScheduleCalendarProps {
   year: number;
   monthIndex: number;
@@ -97,6 +106,58 @@ export function ScheduleCalendar({
 
   return (
     <>
+      <div className={sharedStyles.legendContainer}>
+        <div className={sharedStyles.legend}>
+          <div className={sharedStyles.legendItem}>
+            <span className={`${sharedStyles.legendDot} ${sharedStyles.legendMorning}`} />
+            <span className={sharedStyles.legendText}>朝</span>
+          </div>
+        </div>
+        <div className={sharedStyles.legend}>
+          <div className={sharedStyles.legendItem}>
+            <span className={`${sharedStyles.legendDot} ${sharedStyles.legendAfternoon}`} />
+            <span className={sharedStyles.legendText}>昼</span>
+          </div>
+        </div>
+        <div className={sharedStyles.legend}>
+          <div className={sharedStyles.legendItem}>
+            <span className={`${sharedStyles.legendDot} ${sharedStyles.legendEvening}`} />
+            <span className={sharedStyles.legendText}>夜</span>
+          </div>
+        </div>
+        <div className={sharedStyles.legend}>
+          <div className={sharedStyles.legendItem}>
+            <span className={`${sharedStyles.legendDot} ${sharedStyles.legendLateNight}`} />
+            <span className={sharedStyles.legendText}>深夜</span>
+          </div>
+        </div>
+        <div className={sharedStyles.legend}>
+          <div className={sharedStyles.legendItem}>
+            <span className={`${sharedStyles.legendDot} ${sharedStyles.legendUndefined}`} />
+            <span className={sharedStyles.legendText}>時間未定</span>
+          </div>
+        </div>
+      </div>
+      <div className={sharedStyles.legendContainer} style={{ marginTop: '8px' }}>
+        <div className={sharedStyles.legend}>
+          <div className={sharedStyles.legendItem}>
+            <span className={`${sharedStyles.badgeMarker} ${sharedStyles['badge-stream-off']}`} style={{ fontSize: '0.7rem', padding: '1px 3px' }}>✕</span>
+            <span className={sharedStyles.legendText}>配信休み</span>
+          </div>
+        </div>
+        <div className={sharedStyles.legend}>
+          <div className={sharedStyles.legendItem}>
+            <span className={`${sharedStyles.badgeMarker} ${sharedStyles['badge-work-off']}`} style={{ fontSize: '0.7rem', padding: '1px 3px' }}>〇</span>
+            <span className={sharedStyles.legendText}>仕事休み</span>
+          </div>
+        </div>
+        <div className={sharedStyles.legend}>
+          <div className={sharedStyles.legendItem}>
+            <span className={`${sharedStyles.badgeMarker} ${sharedStyles['badge-tentative']}`} style={{ fontSize: '0.7rem', padding: '1px 3px' }}>？</span>
+            <span className={sharedStyles.legendText}>予定入るかも</span>
+          </div>
+        </div>
+      </div>
       <div className={sharedStyles.weekRow}>
         {weekdayLabels.map((day) => (
           <span key={day} className={sharedStyles.weekLabel}>{day}</span>
@@ -112,8 +173,8 @@ export function ScheduleCalendar({
           
           const badgeInfo = {
             'stream-off': { icon: '✕', label: '配信休み' },
-            'work-off': { icon: '○', label: '仕事休み' },
-            'tentative': { icon: '?', label: '予定未定' },
+            'work-off': { icon: '〇', label: '仕事休み' },
+            'tentative': { icon: '？', label: '予定未定' },
           };
           
           return (
@@ -153,7 +214,9 @@ export function ScheduleCalendar({
               </div>
               {cell.events.length > 0 && (
                 <ul className={sharedStyles.eventList}>
-                  {cell.events.map((event) => {
+                  {[...cell.events]
+                    .sort((a, b) => getStartMinutes(a.start_time) - getStartMinutes(b.start_time))
+                    .map((event) => {
                     const timeCategory = getTimeCategory(event.start_time);
                     const startLabel = event.start_time || "未定";
                     const timeDisplay = event.end_time ? `${startLabel}-${event.end_time}` : startLabel;

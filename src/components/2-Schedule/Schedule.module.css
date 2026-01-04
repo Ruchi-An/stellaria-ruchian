@@ -34,9 +34,9 @@
 
 .modalContent {
   background: linear-gradient(135deg, 
-    rgba(100, 155, 255, 0.92) 0%,
-    rgba(90, 145, 255, 0.88) 50%,
-    rgba(80, 135, 255, 0.92) 100%);
+    rgba(50, 105, 255, 0.92) 0%,
+    rgba(40, 95, 255, 0.92) 50%,
+    rgba(30, 85, 255, 0.92) 100%);
   border: 2px solid rgba(150, 200, 255, 0.5);
   border-radius: 28px;
   box-shadow:
