@@ -27,7 +27,7 @@ function getTimeCategory(timeStr: string | null): 'morning' | 'afternoon' | 'eve
   if (hour >= 6 && hour < 12) return 'morning';
   if (hour >= 12 && hour < 18) return 'afternoon';
   if (hour >= 18 && hour < 24) return 'evening';
-  if (hour >= 0 && hour < 6) return 'late-night';
+  if (hour >= 24 && hour < 30) return 'late-night';
   return 'undefined';
 }
 
@@ -102,7 +102,6 @@ export default function HeroSection() {
                       <div className={styles.itemBody}>
                         <div className={`${styles.itemTime} ${styles[`time-${timeCategory}`]}`}>{timeDisplay}</div>
                         <div className={styles.itemTitle}>{titleDisplay}</div>
-                        {it.memo && <div className={styles.itemNote}>{it.memo}</div>}
                       </div>
                     </li>
                   );

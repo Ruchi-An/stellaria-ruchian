@@ -71,6 +71,7 @@
   width: 35%;
   min-width: 160px;
   max-width: 320px;
+  max-height: 280px;
   overflow: hidden;
   background: rgba(0, 0, 0, 0.3);
   display: flex;
