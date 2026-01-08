@@ -232,9 +232,6 @@ export function ScenarioPage() {
     return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
   });
 
-  // カテゴリーの選択肢を抽出
-  const availableCategories = Array.from(new Set(passedScenarioCards.map(card => card.category).filter(Boolean)));
-
   return (
     <main className="commonPage">
       <section className="commonHero" style={{ paddingBottom: 0 }}>
