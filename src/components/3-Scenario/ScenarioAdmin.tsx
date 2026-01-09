@@ -517,7 +517,13 @@ export function ScenarioAdminPage() {
                 </label>
                 <label className={styles.field}>
                   <span>カテゴリ</span>
-                  <input name="category" value={gmForm.category} onChange={handleGMInput} />
+                  <select name="category" value={gmForm.category} onChange={handleGMInput}>
+                    <option value="">選択してください</option>
+                    <option value="マーダーミステリー">マーダーミステリー</option>
+                    <option value="ストーリープレイング">ストーリープレイング</option>
+                    <option value="スパイゲーム">スパイゲーム</option>
+                    <option value="その他">その他</option>
+                  </select>
                 </label>
                 <label className={styles.field}>
                   <span>制作</span>
@@ -685,12 +691,13 @@ export function ScenarioAdminPage() {
                 </label>
                 <label className={styles.field}>
                   <span>カテゴリ</span>
-                  <input
-                    name="category"
-                    value={form.category}
-                    onChange={handleInput}
-                    placeholder="例: TRPG"
-                  />
+                  <select name="category" value={form.category} onChange={handleInput}>
+                    <option value="">選択してください</option>
+                    <option value="マーダーミステリー">マーダーミステリー</option>
+                    <option value="ストーリープレイング">ストーリープレイング</option>
+                    <option value="スパイゲーム">スパイゲーム</option>
+                    <option value="その他">その他</option>
+                  </select>
                 </label>
                 <label className={styles.field}>
                   <span>制作</span>

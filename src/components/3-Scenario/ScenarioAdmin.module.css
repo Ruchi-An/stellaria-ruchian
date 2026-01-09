@@ -168,6 +168,16 @@
   background: rgba(255, 255, 255, 0.12);
 }
 
+.field select option {
+  background: #1a1a2e;
+  color: #fff;
+}
+
+.field select option:disabled {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.5);
+}
+
 .field textarea {
   resize: vertical;
 }

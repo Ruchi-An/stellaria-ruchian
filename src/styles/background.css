@@ -7,13 +7,23 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* 背景：固定（スクロールで動かない） */
-  background: linear-gradient(rgba(0, 64, 255, 0.3), rgba(50, 100, 255, 0.3)), url('/青ネオン.png') center/cover no-repeat;
-  background-attachment: fixed;
-  background-color: #0a0e27;
-  background-position: center center;
-  background-size: cover;
+  position: relative;
   min-height: 100vh;
+  background-color: #0a0e27;
+}
+
+/* 背景：固定（スマホでも動かない） */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(0, 64, 255, 0.3), rgba(50, 100, 255, 0.3)), url('/青ネオン.png') center/cover no-repeat;
+  background-size: cover;
+  background-position: center center;
+  z-index: -1;
 }
 
 html,
